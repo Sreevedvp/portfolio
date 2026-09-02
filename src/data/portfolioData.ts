@@ -9,10 +9,10 @@ export const HERO_DATA = {
   location: "Hyderabad, India",
   email: "sreevedvp@gmail.com",
   socials: {
-    github: "https://github.com",
-    linkedin: "https://linkedin.com",
-    readcv: "https://read.cv",
-    medium: "https://medium.com",
+    github: "https://github.com/Sreevedvp",
+    linkedin: "https://linkedin.com/in/sreevedvp",
+    readcv: "",
+    medium: "https://medium.com/@sreevedvp",
   }
 };
 

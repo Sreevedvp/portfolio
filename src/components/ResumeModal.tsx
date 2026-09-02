@@ -154,7 +154,7 @@ ${exp.achievements.map(a => `- ${a}`).join('\n')}`).join('\n\n')}
 
         {/* Modal Footer */}
         <div className="px-6 py-3 border-t border-[#004c22]/10 bg-[#f4fbf4] flex justify-between items-center text-xs text-[#707a6f]">
-          <span>© 2024 Sreeved V P</span>
+          <span>© 2026 Sreeved V P</span>
           <button
             onClick={() => {
               onClose();
