@@ -1,180 +1,454 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import gsap from 'gsap';
 import confetti from 'canvas-confetti';
-import { Sparkles, RefreshCw, Wand2 } from 'lucide-react';
+import { Sparkles, RefreshCw, Wand2, Orbit } from 'lucide-react';
 
 interface EmeraldGemProps {
   className?: string;
 }
 
+interface Point3D {
+  x: number;
+  y: number;
+  z: number;
+}
+
+interface Face3D {
+  indices: number[];
+  baseColor: string;
+  highlightColor: string;
+  isTable?: boolean;
+}
+
 export const EmeraldGem: React.FC<EmeraldGemProps> = ({ className = '' }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const gemWrapperRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const shadowRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
+  
   const [clickCount, setClickCount] = useState(0);
-  const [imageError, setImageError] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
-  // Primary image source from user specification with fallback mirror
-  const primaryImageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuD8noGAmBwQb9aoBz7DzSFyc8Jb4dettLn35JsL-NL50WqdSu7Faxxz9iri0FliwCsd9Ao_qvWY0f_NqDBXsXs0zTZSSCOmo2xb82PcgmXF5qH9N1J5jBkkCoXfluFPe5IgT5TOR9qwwW3oLvUECeSSwptFrR6D_s-idkrK6FtbTImnjAQV9AfvlwXsHnWn92Qiiy11YNaxBtJbcQXvzmZpfdhJZqpXVhLXfZuNyhnKnrk4RT-8AY7o";
+  // 3D Physics & Rotation State Refs
+  const rotXRef = useRef<number>(0.2);
+  const rotYRef = useRef<number>(0.4);
+  const rotZRef = useRef<number>(0);
+  const targetRotXRef = useRef<number>(0.2);
+  const targetRotYRef = useRef<number>(0.4);
+  
+  const velXRef = useRef<number>(0);
+  const velYRef = useRef<number>(0.008); // continuous auto rotation speed
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      // 1. Entrance timeline
-      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+  const isDraggingRef = useRef<boolean>(false);
+  const lastMousePosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const animationFrameRef = useRef<number | null>(null);
 
-      tl.fromTo(
-        gemWrapperRef.current,
-        {
-          opacity: 0,
-          scale: 0.7,
-          y: 40,
-          rotationY: -35,
-          rotationZ: -10,
-        },
-        {
-          opacity: 1,
-          scale: 1,
-          y: 0,
-          rotationY: 0,
-          rotationZ: 0,
-          duration: 1.4,
-          delay: 0.1,
-        }
-      )
-      .fromTo(
-        shadowRef.current,
-        { opacity: 0, scale: 0.5 },
-        { opacity: 0.4, scale: 1, duration: 1.2 },
-        "-=1.0"
-      )
-      .fromTo(
-        glowRef.current,
-        { opacity: 0, scale: 0.6 },
-        { opacity: 0.65, scale: 1, duration: 1.4 },
-        "-=1.2"
-      );
+  // -------------------------------------------------------------
+  // Construct 3D Octagonal Emerald Gemstone Geometry
+  // -------------------------------------------------------------
+  const getGemGeometry = useCallback(() => {
+    const vertices: Point3D[] = [];
+    const rTable = 45;   // Top flat table radius
+    const rCrown = 85;   // Crown shoulder radius
+    const rGirdle = 100; // Middle girdle radius
+    const rPavilion = 40; // Lower pavilion radius
+    
+    const hTable = 65;
+    const hCrown = 40;
+    const hGirdleUpper = 10;
+    const hGirdleLower = -10;
+    const hPavilion = -70;
+    const hCulet = -105;  // Bottom tip point
 
-      // 2. Continuous Organic Float Animation
-      gsap.to(gemWrapperRef.current, {
-        y: -16,
-        rotationZ: 2.5,
-        rotationX: 3,
-        duration: 3,
-        ease: 'sine.inOut',
-        repeat: -1,
-        yoyo: true,
+    const numSides = 8; // 8-sided octagonal cut
+
+    // Ring 0: Top Table Vertices (0 - 7)
+    for (let i = 0; i < numSides; i++) {
+      const angle = (i / numSides) * Math.PI * 2 + Math.PI / 8;
+      vertices.push({
+        x: Math.cos(angle) * rTable,
+        y: Math.sin(angle) * rTable,
+        z: hTable,
+      });
+    }
+
+    // Ring 1: Crown Shoulder Vertices (8 - 15)
+    for (let i = 0; i < numSides; i++) {
+      const angle = (i / numSides) * Math.PI * 2;
+      vertices.push({
+        x: Math.cos(angle) * rCrown,
+        y: Math.sin(angle) * rCrown,
+        z: hCrown,
+      });
+    }
+
+    // Ring 2: Upper Girdle Vertices (16 - 23)
+    for (let i = 0; i < numSides; i++) {
+      const angle = (i / numSides) * Math.PI * 2 + Math.PI / 8;
+      vertices.push({
+        x: Math.cos(angle) * rGirdle,
+        y: Math.sin(angle) * rGirdle,
+        z: hGirdleUpper,
+      });
+    }
+
+    // Ring 3: Lower Girdle Vertices (24 - 31)
+    for (let i = 0; i < numSides; i++) {
+      const angle = (i / numSides) * Math.PI * 2 + Math.PI / 8;
+      vertices.push({
+        x: Math.cos(angle) * rGirdle,
+        y: Math.sin(angle) * rGirdle,
+        z: hGirdleLower,
+      });
+    }
+
+    // Ring 4: Pavilion Vertices (32 - 39)
+    for (let i = 0; i < numSides; i++) {
+      const angle = (i / numSides) * Math.PI * 2;
+      vertices.push({
+        x: Math.cos(angle) * rPavilion,
+        y: Math.sin(angle) * rPavilion,
+        z: hPavilion,
+      });
+    }
+
+    // Point 40: Culet (Bottom tip)
+    vertices.push({ x: 0, y: 0, z: hCulet });
+
+    // Define Polyhedral Facets (Polygons)
+    const faces: Face3D[] = [];
+
+    // 1. Top Table Facet (Octagon)
+    faces.push({
+      indices: [0, 1, 2, 3, 4, 5, 6, 7],
+      baseColor: '#34d399',
+      highlightColor: '#a7f3d0',
+      isTable: true,
+    });
+
+    // 2. Crown Facets (Triangles & Quadrilaterals connecting Table to Girdle)
+    for (let i = 0; i < numSides; i++) {
+      const nextI = (i + 1) % numSides;
+      
+      // Upper Crown Triangles
+      faces.push({
+        indices: [i, nextI, i + 8],
+        baseColor: '#10b981',
+        highlightColor: '#6ee7b7',
       });
 
-      // Shadow breathes inversely
-      gsap.to(shadowRef.current, {
-        scale: 0.85,
-        opacity: 0.22,
-        duration: 3,
-        ease: 'sine.inOut',
-        repeat: -1,
-        yoyo: true,
+      // Lower Crown Quadrilaterals
+      faces.push({
+        indices: [nextI, (nextI + 8) % 16 + 8, i + 16, i + 8],
+        baseColor: '#059669',
+        highlightColor: '#34d399',
       });
+    }
 
-      // Caustic ambient light pulse
-      gsap.to(glowRef.current, {
-        scale: 1.12,
-        opacity: 0.8,
-        duration: 2.6,
-        ease: 'sine.inOut',
-        repeat: -1,
-        yoyo: true,
+    // 3. Girdle Facets (Vertical facets along middle edge)
+    for (let i = 0; i < numSides; i++) {
+      const nextI = (i + 1) % numSides;
+      faces.push({
+        indices: [i + 16, nextI + 16, nextI + 24, i + 24],
+        baseColor: '#047857',
+        highlightColor: '#10b981',
       });
-    }, containerRef);
+    }
 
-    return () => ctx.revert();
+    // 4. Upper Pavilion Facets (Connecting Girdle to Pavilion Ring)
+    for (let i = 0; i < numSides; i++) {
+      const nextI = (i + 1) % numSides;
+      faces.push({
+        indices: [i + 24, nextI + 24, i + 32],
+        baseColor: '#065f46',
+        highlightColor: '#059669',
+      });
+    }
+
+    // 5. Lower Pavilion Facets (Connecting Pavilion Ring to Culet Tip)
+    for (let i = 0; i < numSides; i++) {
+      const nextI = (i + 1) % numSides;
+      faces.push({
+        indices: [i + 32, nextI + 32, 40],
+        baseColor: '#022c22',
+        highlightColor: '#047857',
+      });
+    }
+
+    return { vertices, faces };
   }, []);
 
-  // 3. 3D Mouse Parallax Tilt Handler
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!containerRef.current || !gemWrapperRef.current) return;
+  // -------------------------------------------------------------
+  // Real-Time 3D Rendering Canvas Engine
+  // -------------------------------------------------------------
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const container = containerRef.current;
+    if (!canvas || !container) return;
 
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-    const rotX = -(y / rect.height) * 28;
-    const rotY = (x / rect.width) * 28;
-    const moveX = (x / rect.width) * 16;
-    const moveY = (y / rect.height) * 16;
+    const { vertices, faces } = getGemGeometry();
 
-    gsap.to(gemWrapperRef.current, {
-      rotationX: rotX,
-      rotationY: rotY,
-      x: moveX,
-      y: moveY - 8,
-      duration: 0.5,
-      ease: 'power2.out',
-      transformPerspective: 1000,
-    });
+    const setupScale = () => {
+      const dpr = window.devicePixelRatio || 1;
+      const size = Math.min(container.clientWidth || 360, 360);
 
-    if (shadowRef.current) {
-      gsap.to(shadowRef.current, {
-        x: moveX * 0.5,
-        duration: 0.5,
-        ease: 'power2.out',
-      });
-    }
+      canvas.width = size * dpr;
+      canvas.height = size * dpr;
+      canvas.style.width = `${size}px`;
+      canvas.style.height = `${size}px`;
 
-    if (glowRef.current) {
-      gsap.to(glowRef.current, {
-        x: moveX * 0.35,
-        y: moveY * 0.35,
-        duration: 0.7,
-        ease: 'power2.out',
-      });
-    }
-  };
+      ctx.resetTransform();
+      ctx.scale(dpr, dpr);
+    };
 
-  const handleMouseLeave = () => {
-    if (!gemWrapperRef.current) return;
-    gsap.to(gemWrapperRef.current, {
-      rotationX: 0,
-      rotationY: 0,
-      x: 0,
-      y: 0,
-      duration: 1.1,
-      ease: 'elastic.out(1, 0.45)',
-    });
-    if (shadowRef.current) {
-      gsap.to(shadowRef.current, { x: 0, duration: 0.9 });
-    }
-    if (glowRef.current) {
-      gsap.to(glowRef.current, { x: 0, y: 0, duration: 0.9 });
-    }
-  };
+    setupScale();
+    window.addEventListener('resize', setupScale);
 
-  // 4. Click Interaction: 360 Spin + Confetti Sparkles
-  const handleGemClick = (e: React.MouseEvent) => {
-    setClickCount(prev => prev + 1);
-
-    if (gemWrapperRef.current) {
+    // Initial Entrance Timeline via GSAP
+    if (containerRef.current) {
       gsap.fromTo(
-        gemWrapperRef.current,
-        { scale: 0.92, rotationY: 0 },
-        {
-          scale: 1.08,
-          rotationY: 360,
-          duration: 1.1,
-          ease: 'back.out(1.6)',
-          onComplete: () => {
-            gsap.to(gemWrapperRef.current, { scale: 1, duration: 0.3 });
-          }
-        }
+        glowRef.current,
+        { opacity: 0, scale: 0.6 },
+        { opacity: 0.75, scale: 1, duration: 1.4, ease: 'power3.out' }
+      );
+      gsap.fromTo(
+        shadowRef.current,
+        { opacity: 0, scale: 0.5 },
+        { opacity: 0.35, scale: 1, duration: 1.4, ease: 'power3.out' }
       );
     }
+
+    // Light Source Direction Vector (Top-Left-Front normalized)
+    const lightDir = { x: -0.45, y: -0.55, z: 0.7 };
+    const lightLen = Math.sqrt(lightDir.x * lightDir.x + lightDir.y * lightDir.y + lightDir.z * lightDir.z);
+    lightDir.x /= lightLen;
+    lightDir.y /= lightLen;
+    lightDir.z /= lightLen;
+
+    let time = 0;
+
+    const render3DGem = () => {
+      time += 0.015;
+
+      const size = Math.min(container.clientWidth || 360, 360);
+      const centerX = size / 2;
+      const centerY = size / 2;
+
+      ctx.clearRect(0, 0, size, size);
+
+      // Smooth Rotation Angle Interpolation (Lerp for silky smooth motion)
+      if (!isDraggingRef.current) {
+        // Continuous auto rotY + momentum decay
+        velYRef.current *= 0.95;
+        if (Math.abs(velYRef.current) < 0.006) {
+          velYRef.current = 0.007; // Base gentle drift
+        }
+        velXRef.current *= 0.95;
+
+        targetRotYRef.current += velYRef.current;
+        targetRotXRef.current += velXRef.current;
+      }
+
+      // Lerp rotX & rotY towards target for zero jittering
+      rotXRef.current += (targetRotXRef.current - rotXRef.current) * 0.08;
+      rotYRef.current += (targetRotYRef.current - rotYRef.current) * 0.08;
+
+      // Gentle floating Y bounce
+      const floatY = Math.sin(time * 1.8) * 8;
+
+      // Update Ground Shadow scale/opacity inversely
+      if (shadowRef.current) {
+        const shadowScale = 1 - Math.sin(time * 1.8) * 0.08;
+        const shadowOpacity = 0.3 - Math.sin(time * 1.8) * 0.05;
+        shadowRef.current.style.transform = `scale(${shadowScale})`;
+        shadowRef.current.style.opacity = `${shadowOpacity}`;
+      }
+
+      const rx = rotXRef.current;
+      const ry = rotYRef.current;
+      const rz = rotZRef.current;
+
+      // Rotation Matrix Coefficients
+      const cosX = Math.cos(rx), sinX = Math.sin(rx);
+      const cosY = Math.cos(ry), sinY = Math.sin(ry);
+      const cosZ = Math.cos(rz), sinZ = Math.sin(rz);
+
+      // 1. Transform Vertices
+      const transformedVerts: Point3D[] = vertices.map(v => {
+        // Yaw (Y)
+        let x1 = v.x * cosY + v.z * sinY;
+        let y1 = v.y;
+        let z1 = -v.x * sinY + v.z * cosY;
+
+        // Pitch (X)
+        let x2 = x1;
+        let y2 = y1 * cosX - z1 * sinX;
+        let z2 = y1 * sinX + z1 * cosX;
+
+        // Roll (Z)
+        let x3 = x2 * cosZ - y2 * sinZ;
+        let y3 = x2 * sinZ + y2 * cosZ;
+        let z3 = z2;
+
+        return { x: x3, y: y3 + floatY, z: z3 };
+      });
+
+      // 2. Process & Depth-Sort Facets (Painter's Algorithm)
+      const processedFaces = faces.map(face => {
+        const polyVerts = face.indices.map(idx => transformedVerts[idx]);
+
+        // Calculate average Z for depth sorting
+        const avgZ = polyVerts.reduce((acc, v) => acc + v.z, 0) / polyVerts.length;
+
+        // Calculate Normal Vector via Cross Product (v1 - v0) x (v2 - v0)
+        const v0 = polyVerts[0];
+        const v1 = polyVerts[1];
+        const v2 = polyVerts[2];
+
+        const ax = v1.x - v0.x, ay = v1.y - v0.y, az = v1.z - v0.z;
+        const bx = v2.x - v0.x, by = v2.y - v0.y, bz = v2.z - v0.z;
+
+        let nx = ay * bz - az * by;
+        let ny = az * bx - ax * bz;
+        let nz = ax * by - ay * bx;
+
+        const normLen = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+        nx /= normLen;
+        ny /= normLen;
+        nz /= normLen;
+
+        // Diffuse Shading Intensity (dot product with light vector)
+        const dotLight = Math.max(0.12, nx * lightDir.x + ny * lightDir.y + nz * lightDir.z);
+
+        // Specular Highlight (blended reflection)
+        const rx = 2 * dotLight * nx - lightDir.x;
+        const ry = 2 * dotLight * ny - lightDir.y;
+        const rz = 2 * dotLight * nz - lightDir.z;
+        const spec = Math.pow(Math.max(0, rz), 16);
+
+        return {
+          face,
+          polyVerts,
+          avgZ,
+          nz,
+          dotLight,
+          spec,
+        };
+      });
+
+      // Sort faces back-to-front
+      processedFaces.sort((a, b) => a.avgZ - b.avgZ);
+
+      // Perspective Projection Factor
+      const fov = 380;
+
+      // 3. Draw Facets
+      processedFaces.forEach(({ face, polyVerts, nz, dotLight, spec }) => {
+        // Backface Culling (only draw faces angled towards camera)
+        if (nz < -0.15) return;
+
+        ctx.beginPath();
+        polyVerts.forEach((v, i) => {
+          const scale = fov / (fov - v.z);
+          const px = centerX + v.x * scale;
+          const py = centerY + v.y * scale;
+
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        });
+        ctx.closePath();
+
+        // Facet Shading & Dynamic Color Blending
+        const baseHue = 158; // Emerald Green
+        const lightness = Math.min(85, Math.max(12, Math.round(18 + dotLight * 48 + spec * 35)));
+        const saturation = Math.round(75 + dotLight * 20);
+
+        ctx.fillStyle = `hsl(${baseHue}, ${saturation}%, ${lightness}%)`;
+        ctx.fill();
+
+        // Inner Facet Refraction Wireframe / Highlight Stroke
+        ctx.lineWidth = face.isTable ? 1.8 : 1.0;
+        const strokeAlpha = Math.min(0.7, 0.2 + spec * 0.5 + dotLight * 0.3);
+        ctx.strokeStyle = `rgba(209, 250, 229, ${strokeAlpha})`;
+        ctx.stroke();
+
+        // Specular Reflection Glint Flare on front-facing facets
+        if (spec > 0.4) {
+          ctx.save();
+          ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(0.85, spec * 0.9)})`;
+          ctx.fill();
+          ctx.restore();
+        }
+      });
+
+      animationFrameRef.current = requestAnimationFrame(render3DGem);
+    };
+
+    animationFrameRef.current = requestAnimationFrame(render3DGem);
+
+    return () => {
+      window.removeEventListener('resize', setupScale);
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+    };
+  }, [getGemGeometry]);
+
+  // -------------------------------------------------------------
+  // Mouse & Touch Dragging Handlers for Real 3D Orbiting
+  // -------------------------------------------------------------
+  const handlePointerDown = (e: React.MouseEvent | React.TouchEvent) => {
+    isDraggingRef.current = true;
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    lastMousePosRef.current = { x: clientX, y: clientY };
+  };
+
+  const handlePointerMove = (e: React.MouseEvent | React.TouchEvent) => {
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+
+    if (isDraggingRef.current) {
+      const dx = clientX - lastMousePosRef.current.x;
+      const dy = clientY - lastMousePosRef.current.y;
+
+      velYRef.current = dx * 0.012;
+      velXRef.current = -dy * 0.012;
+
+      targetRotYRef.current += dx * 0.012;
+      targetRotXRef.current -= dy * 0.012;
+
+      lastMousePosRef.current = { x: clientX, y: clientY };
+    } else if (containerRef.current) {
+      // Mouse Parallax Tilt when hovering over container
+      const rect = containerRef.current.getBoundingClientRect();
+      const relX = (clientX - rect.left - rect.width / 2) / (rect.width / 2);
+      const relY = (clientY - rect.top - rect.height / 2) / (rect.height / 2);
+
+      targetRotXRef.current = 0.2 - relY * 0.45;
+      targetRotYRef.current += relX * 0.008;
+    }
+  };
+
+  const handlePointerUp = () => {
+    isDraggingRef.current = false;
+  };
+
+  // Micro Interactions
+  const trigger360Orbit = () => {
+    velYRef.current = 0.12; // Boost angular velocity for a smooth 360 spin
+  };
+
+  const handleGemClick = (e: React.MouseEvent) => {
+    setClickCount(prev => prev + 1);
+    trigger360Orbit();
 
     if (glowRef.current) {
       gsap.fromTo(
         glowRef.current,
-        { scale: 1.5, opacity: 1 },
-        { scale: 1, opacity: 0.65, duration: 1.1, ease: 'power2.out' }
+        { scale: 1.4, opacity: 1 },
+        { scale: 1, opacity: 0.75, duration: 1.2, ease: 'power2.out' }
       );
     }
 
@@ -184,141 +458,66 @@ export const EmeraldGem: React.FC<EmeraldGemProps> = ({ className = '' }) => {
       const originY = (rect.top + rect.height / 2) / window.innerHeight;
 
       confetti({
-        particleCount: 26,
-        spread: 65,
+        particleCount: 28,
+        spread: 70,
         origin: { x: originX, y: originY },
         colors: ['#86efac', '#166534', '#a6f4b5', '#004c22', '#eef5ee'],
         disableForReducedMotion: true,
-        scalar: 0.8,
-        ticks: 100,
+        scalar: 0.85,
+        ticks: 110,
         shapes: ['circle', 'square'],
       });
     }
-  };
-
-  const trigger360Orbit = () => {
-    if (!gemWrapperRef.current) return;
-    gsap.to(gemWrapperRef.current, {
-      rotationY: "+=360",
-      duration: 1.6,
-      ease: 'power3.inOut',
-    });
   };
 
   return (
     <div
       ref={containerRef}
       id="emerald-gem-container"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className={`relative flex items-center justify-center select-none cursor-pointer group ${className}`}
-      style={{ perspective: 1200 }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        handlePointerUp();
+      }}
+      onMouseMove={handlePointerMove}
+      onMouseDown={handlePointerDown}
+      onMouseUp={handlePointerUp}
+      onTouchStart={handlePointerDown}
+      onTouchMove={handlePointerMove}
+      onTouchEnd={handlePointerUp}
+      className={`relative flex items-center justify-center select-none cursor-grab active:cursor-grabbing group ${className}`}
     >
       {/* Background Soft Emerald Caustics & Glow */}
       <div
         ref={glowRef}
         id="emerald-ambient-glow"
-        className="absolute w-[260px] h-[260px] md:w-[360px] md:h-[360px] rounded-full bg-radial from-[#86efac]/40 via-[#166534]/15 to-transparent blur-3xl pointer-events-none transform -translate-y-4 transition-opacity duration-500"
+        className="absolute w-[260px] h-[260px] md:w-[360px] md:h-[360px] rounded-full bg-radial from-[#86efac]/40 via-[#166534]/15 to-transparent blur-3xl pointer-events-none transform transition-all duration-700"
       />
 
       {/* Decorative Emerald Geometry Rings */}
-      <div className="absolute w-[280px] h-[280px] md:w-[380px] md:h-[380px] rounded-full border border-[#004c22]/10 border-dashed pointer-events-none opacity-40 animate-spin" style={{ animationDuration: '60s' }} />
-      <div className="absolute w-[220px] h-[220px] md:w-[300px] md:h-[300px] rounded-full border border-[#86efac]/20 pointer-events-none opacity-30 animate-spin" style={{ animationDuration: '45s', animationDirection: 'reverse' }} />
-
-      {/* Main 3D Gemstone Asset Wrapper */}
       <div
-        ref={gemWrapperRef}
+        className="absolute w-[280px] h-[280px] md:w-[380px] md:h-[380px] rounded-full border border-[#004c22]/10 border-dashed pointer-events-none opacity-40 animate-spin"
+        style={{ animationDuration: '65s' }}
+      />
+      <div
+        className="absolute w-[220px] h-[220px] md:w-[300px] md:h-[300px] rounded-full border border-[#86efac]/20 pointer-events-none opacity-30 animate-spin"
+        style={{ animationDuration: '48s', animationDirection: 'reverse' }}
+      />
+
+      {/* Real 3D Polyhedral Gemstone Canvas */}
+      <div
         onClick={handleGemClick}
-        className="relative z-10 p-2 transform-gpu transition-all duration-300 flex items-center justify-center"
-        title="Click to interact with the Emerald Gemstone"
-        style={{ transformStyle: 'preserve-3d' }}
+        className="relative z-10 p-2 flex items-center justify-center"
+        title="Click or drag to rotate 3D Emerald Gemstone"
       >
-        {!imageError ? (
-          <img
-            id="emerald-3d-jewel"
-            src={primaryImageUrl}
-            alt="Emerald 3D Faceted Dodecahedron Gemstone"
-            referrerPolicy="no-referrer"
-            crossOrigin="anonymous"
-            onLoad={() => setImageLoaded(true)}
-            onError={() => setImageError(true)}
-            className="w-[260px] h-[260px] md:w-[360px] md:h-[360px] object-contain drop-shadow-[0_20px_30px_rgba(0,76,34,0.28)] transition-filter duration-300"
-            loading="eager"
-          />
-        ) : null}
+        <canvas
+          ref={canvasRef}
+          className="w-[260px] h-[260px] md:w-[360px] md:h-[360px] drop-shadow-[0_22px_32px_rgba(0,76,34,0.32)] transition-transform duration-300"
+        />
 
-        {/* High-Fidelity 3D Faceted Vector Emerald Fallback if network blocks external URL */}
-        {(imageError || !imageLoaded) && (
-          <div className={`${!imageError && imageLoaded ? 'hidden' : 'block'} w-[260px] h-[260px] md:w-[360px] md:h-[360px] flex items-center justify-center drop-shadow-[0_25px_35px_rgba(0,76,34,0.3)]`}>
-            <svg
-              viewBox="0 0 400 400"
-              className="w-full h-full"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <defs>
-                <linearGradient id="facetTop" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#a7f3d0" />
-                  <stop offset="50%" stopColor="#34d399" />
-                  <stop offset="100%" stopColor="#059669" />
-                </linearGradient>
-                <linearGradient id="facetFront" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#10b981" />
-                  <stop offset="100%" stopColor="#047857" />
-                </linearGradient>
-                <linearGradient id="facetLeft" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#059669" />
-                  <stop offset="100%" stopColor="#064e3b" />
-                </linearGradient>
-                <linearGradient id="facetRight" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#047857" />
-                  <stop offset="100%" stopColor="#022c22" />
-                </linearGradient>
-                <linearGradient id="facetBottom" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#065f46" />
-                  <stop offset="100%" stopColor="#01241a" />
-                </linearGradient>
-                <linearGradient id="specularGlint" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8" />
-                  <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-
-              {/* Faceted Dodecahedron Geometry */}
-              {/* Back facets */}
-              <polygon points="200,40 290,105 320,200 200,200" fill="#047857" opacity="0.8" />
-              <polygon points="200,40 110,105 80,200 200,200" fill="#065f46" opacity="0.8" />
-
-              {/* Lower Facets */}
-              <polygon points="80,200 110,295 200,360 200,200" fill="url(#facetLeft)" />
-              <polygon points="320,200 290,295 200,360 200,200" fill="url(#facetRight)" />
-              <polygon points="110,295 200,360 290,295 200,280" fill="url(#facetBottom)" />
-
-              {/* Upper Main Facets */}
-              <polygon points="200,40 290,105 200,160 110,105" fill="url(#facetTop)" />
-              <polygon points="110,105 200,160 200,280 80,200" fill="url(#facetFront)" />
-              <polygon points="290,105 320,200 200,280 200,160" fill="url(#facetRight)" />
-
-              {/* Center Diamond Table Facet */}
-              <polygon points="200,100 250,160 200,220 150,160" fill="url(#facetTop)" opacity="0.9" />
-
-              {/* Specular Highlight Reflections */}
-              <polygon points="200,40 240,75 200,100 160,75" fill="url(#specularGlint)" opacity="0.7" />
-              <line x1="200" y1="40" x2="200" y2="160" stroke="#d1fae5" strokeWidth="2" strokeLinecap="round" opacity="0.6" />
-              <line x1="110" y1="105" x2="200" y2="160" stroke="#d1fae5" strokeWidth="2" strokeLinecap="round" opacity="0.5" />
-              <line x1="290" y1="105" x2="200" y2="160" stroke="#a7f3d0" strokeWidth="2" strokeLinecap="round" opacity="0.5" />
-              <line x1="200" y1="160" x2="200" y2="280" stroke="#6ee7b7" strokeWidth="2" strokeLinecap="round" opacity="0.4" />
-
-              {/* Ambient Glow Center Star */}
-              <circle cx="200" cy="160" r="18" fill="#ecfdf5" opacity="0.4" filter="blur(4px)" />
-            </svg>
-          </div>
-        )}
-
-        {/* Floating Refraction Sparkle Badge on Hover */}
-        <div className="absolute top-4 right-4 md:top-8 md:right-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/95 backdrop-blur-md px-3 py-1 rounded-full border border-[#004c22]/15 shadow-sm flex items-center gap-1.5 pointer-events-none">
+        {/* Floating Sparkle Refraction Indicator */}
+        <div className="absolute top-4 right-4 md:top-8 md:right-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/95 backdrop-blur-md px-3 py-1 rounded-full border border-[#004c22]/15 shadow-xs flex items-center gap-1.5 pointer-events-none z-20">
           <Sparkles className="w-3.5 h-3.5 text-[#004c22] animate-pulse" />
-          <span className="text-[11px] font-medium text-[#004c22] tracking-wide">Interactive 3D</span>
         </div>
       </div>
 
@@ -326,18 +525,18 @@ export const EmeraldGem: React.FC<EmeraldGemProps> = ({ className = '' }) => {
       <div
         ref={shadowRef}
         id="emerald-ground-shadow"
-        className="absolute bottom-4 md:bottom-2 w-[160px] md:w-[240px] h-[26px] rounded-[100%] bg-[#064e3b]/30 blur-md pointer-events-none transform translate-y-6"
+        className="absolute bottom-4 md:bottom-2 w-[160px] md:w-[240px] h-[26px] rounded-[100%] bg-[#064e3b]/35 blur-md pointer-events-none transition-all duration-300"
       />
 
       {/* Micro-interaction control bar underneath on hover/focus */}
-      <div className="absolute -bottom-9 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-[#004c22]/10 shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-300 z-20">
+      <div className="absolute -bottom-9 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-[#004c22]/10 shadow-xs opacity-0 group-hover:opacity-100 transition-all duration-300 z-20">
         <button
           onClick={(e) => { e.stopPropagation(); trigger360Orbit(); }}
           className="flex items-center gap-1 text-[11px] font-medium text-[#004c22] hover:text-[#166534] px-2 py-0.5 rounded hover:bg-[#eef5ee] transition-colors"
-          title="Rotate 360"
+          title="Spin 360"
         >
-          <RefreshCw className="w-3 h-3" />
-          <span>Spin</span>
+          <Orbit className="w-3.5 h-3.5" />
+          <span>Spin 360°</span>
         </button>
         <span className="text-[#004c22]/20">•</span>
         <button
@@ -345,7 +544,7 @@ export const EmeraldGem: React.FC<EmeraldGemProps> = ({ className = '' }) => {
           className="flex items-center gap-1 text-[11px] font-medium text-[#004c22] hover:text-[#166534] px-2 py-0.5 rounded hover:bg-[#eef5ee] transition-colors"
           title="Sparkle Refraction"
         >
-          <Wand2 className="w-3 h-3" />
+          <Wand2 className="w-3.5 h-3.5" />
           <span>Sparkle {clickCount > 0 && `(${clickCount})`}</span>
         </button>
       </div>
