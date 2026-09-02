@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "EB Garamond", Georgia, Cambria, serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  --color-surface: #f4fbf4;
+  --color-surface-dim: #d5dcd5;
+  --color-surface-bright: #f4fbf4;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #eef5ee;
+  --color-surface-container: #e9f0e9;
+  --color-surface-container-high: #e3eae3;
+  --color-surface-container-highest: #dde4de;
+  --color-on-surface: #161d19;
+  --color-on-surface-variant: #404940;
+  --color-primary: #004c22;
+  --color-primary-container: #166534;
+  --color-secondary: #006d3e;
+  --color-secondary-container: #8cf5b2;
+  --color-deep-forest: #064e3b;
+  --color-mint-surface: #ecf5ec;
+  --color-outline-subtle: rgba(0, 76, 34, 0.08);
+}
+
+@layer base {
+  body {
+    background-color: #f4fbf4;
+    color: #161d19;
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, .font-editorial {
+    font-family: var(--font-serif);
+  }
+}
+
+/* Custom emerald glass & ambient lighting */
+.emerald-card {
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 76, 34, 0.08);
+  box-shadow: 0px 4px 20px rgba(0, 76, 34, 0.04);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+}
+
+.emerald-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0px 12px 32px rgba(0, 76, 34, 0.09);
+  border-color: rgba(0, 76, 34, 0.18);
+}
+
+.emerald-glow {
+  filter: drop-shadow(0 20px 30px rgba(0, 76, 34, 0.22));
+}
+
+.emerald-ambient-orb {
+  background: radial-gradient(circle, rgba(134, 239, 172, 0.35) 0%, rgba(244, 251, 244, 0) 70%);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #f4fbf4;
+}
+::-webkit-scrollbar-thumb {
+  background: #c1edc8;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #73db9a;
+}
