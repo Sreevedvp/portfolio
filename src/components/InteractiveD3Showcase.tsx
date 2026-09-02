@@ -17,7 +17,8 @@ import {
   Cpu,
   Boxes,
   Compass,
-  Touchpad
+  Touchpad,
+  Sparkles
 } from 'lucide-react';
 
 interface KnowledgeNode {
