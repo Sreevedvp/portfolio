@@ -56,12 +56,12 @@ interface Shockwave {
 }
 
 const CLUSTERS = [
-  { name: 'Angular & Frontend', color: '#004c22', highlight: '#4ade80', icon: Code2 },
-  { name: 'Data Visualization', color: '#006d3e', highlight: '#86efac', icon: Network },
-  { name: 'Rust & Systems', color: '#166534', highlight: '#34d399', icon: Cpu },
-  { name: 'React & UI Craft', color: '#047857', highlight: '#6ee7b7', icon: Boxes },
-  { name: 'Cloud & DevOps', color: '#065f46', highlight: '#a7f3d0', icon: Server },
-  { name: 'AI & Automation', color: '#14532d', highlight: '#bbf7d0', icon: Brain },
+  { name: 'Angular & Frontend', color: '#ffd600', highlight: '#4ade80', icon: Code2 },
+  { name: 'Data Visualization', color: '#00c4dd', highlight: '#86efac', icon: Network },
+  { name: 'Rust & Systems', color: '#b388ff', highlight: '#34d399', icon: Cpu },
+  { name: 'React & UI Craft', color: '#ff668e', highlight: '#6ee7b7', icon: Boxes },
+  { name: 'Cloud & DevOps', color: '#69dca9', highlight: '#a7f3d0', icon: Server },
+  { name: 'AI & Automation', color: '#ffb86c', highlight: '#bbf7d0', icon: Brain },
 ];
 
 // Definition of Sreeved's Architecture Knowledge Mesh
@@ -245,7 +245,7 @@ export const InteractiveD3Showcase: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Control States
-  const [isRunning, setIsRunning] = useState(true);
+  const [isRunning, setIsRunning] = useState(() => !window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const [fps, setFps] = useState(60);
   const [simSpeed, setSimSpeed] = useState(1);
   const [mode, setMode] = useState<'topology' | 'mesh' | 'cluster'>('topology');
@@ -396,7 +396,12 @@ export const InteractiveD3Showcase: React.FC = () => {
     });
     resizeObserver.observe(container);
 
+    let visible = false;
+    const visibilityObserver = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; });
+    visibilityObserver.observe(container);
     const render = (time: number) => {
+      if (!visible || document.hidden) { animationFrameRef.current = requestAnimationFrame(render); return; }
+      const light = document.documentElement.dataset.theme === 'light';
       // FPS counter update
       frameCountRef.current++;
       if (time - lastTimeRef.current >= 1000) {
@@ -589,7 +594,7 @@ export const InteractiveD3Showcase: React.FC = () => {
           ctx.setLineDash([]);
         }
 
-        ctx.strokeStyle = opacity > 0.1 ? grad : `rgba(0, 76, 34, ${opacity})`;
+        ctx.strokeStyle = opacity > 0.1 ? grad : `rgba(140, 150, 180, ${opacity})`;
         ctx.beginPath();
         ctx.moveTo(s.x, s.y);
         ctx.lineTo(t.x, t.y);
@@ -656,8 +661,8 @@ export const InteractiveD3Showcase: React.FC = () => {
         if (node.isHub || isFocused || (width > 600 && !isClusterFiltered)) {
           ctx.save();
           ctx.globalAlpha = baseAlpha;
-          ctx.fillStyle = isFocused ? '#004c22' : (node.isHub ? '#004c22' : '#161d19');
-          ctx.font = `${node.isHub || isFocused ? '600' : '500'} ${node.isHub ? '12px' : '10px'} Inter, sans-serif`;
+          ctx.fillStyle = light ? '#24242c' : '#d7d7e2';
+          ctx.font = `${node.isHub || isFocused ? '600' : '500'} ${node.isHub ? '13px' : '12px'} Inter, sans-serif`;
           ctx.textAlign = 'center';
           ctx.fillText(node.label, node.x, node.y + node.radius + (node.isHub ? 16 : 13));
           ctx.restore();
@@ -670,6 +675,7 @@ export const InteractiveD3Showcase: React.FC = () => {
     animationFrameRef.current = requestAnimationFrame(render);
 
     return () => {
+      visibilityObserver.disconnect();
       resizeObserver.disconnect();
       if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
     };
@@ -798,56 +804,56 @@ export const InteractiveD3Showcase: React.FC = () => {
   return (
     <section id="visualizer" className="scroll-mt-24 space-y-6">
       {/* Section Header */}
-      <div className="border-b border-[#004c22]/15 pb-4 flex flex-wrap items-center justify-between gap-4">
+      <div className="border-b border-[var(--border-color)] pb-4 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h2 className="font-serif text-3xl md:text-[32px] font-medium text-[#004c22]">
-              Interactive Architecture & Skill Graph
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="font-serif text-3xl md:text-[32px] font-medium text-[var(--accent-primary)]">
+              An interconnected skill set
             </h2>
-            <span className="bg-[#004c22]/10 text-[#004c22] text-xs font-mono px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1">
+            <span className="bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] text-xs font-mono px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1">
               <Sparkles className="w-3 h-3 text-emerald-600" />
               Live Mesh
             </span>
           </div>
-          <p className="text-sm text-[#404940] mt-1">
+          <p className="text-sm text-[var(--text-secondary)] mt-1">
             Tap or drag any node (e.g. <strong>Angular</strong>, <strong>Data Visualization</strong>, <strong>Rust</strong>) to inspect specialized engineering topics, metrics, and architecture patterns.
           </p>
         </div>
 
         {/* Live Telemetry Badge */}
-        <div className="flex items-center gap-3 bg-[#eef5ee] px-3.5 py-1.5 rounded-full border border-[#004c22]/10 shadow-xs">
+        <div className="flex items-center gap-3 bg-[var(--bg-secondary)] px-3.5 py-1.5 rounded-full border border-[var(--border-color)] shadow-xs">
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 -ml-4" />
-            <span className="text-xs font-mono font-medium text-[#004c22]">
+            <span className="text-xs font-mono font-medium text-[var(--accent-primary)]">
               {fps} FPS
             </span>
           </div>
-          <span className="text-[#004c22]/20">|</span>
-          <span className="text-xs font-mono text-[#404940]">
+          <span className="text-[var(--accent-primary)]/20">|</span>
+          <span className="text-xs font-mono text-[var(--text-secondary)]">
             {nodesRef.current.length} Knowledge Nodes
           </span>
-          <span className="text-[#004c22]/20">|</span>
-          <span className="text-xs font-mono text-[#404940]">
+          <span className="text-[var(--accent-primary)]/20">|</span>
+          <span className="text-xs font-mono text-[var(--text-secondary)]">
             {activeConnectionsCount} Links
           </span>
         </div>
       </div>
 
       {/* Main Visualizer Container */}
-      <div className="emerald-card rounded-xl p-4 md:p-6 relative overflow-hidden bg-white shadow-sm border border-[#004c22]/10">
+      <div className="emerald-card rounded-xl p-4 md:p-6 relative overflow-hidden bg-[var(--bg-card)] shadow-sm border border-[var(--border-color)]">
         
         {/* Top Control Bar: Mode Switching & Cluster Filters */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
           
           {/* Mode Switcher */}
-          <div className="flex items-center bg-[#f4fbf4] p-1 rounded-lg border border-[#004c22]/10">
+          <div className="flex items-center bg-[var(--bg-primary)] p-1 rounded-lg border border-[var(--border-color)]">
             <button
               onClick={() => setMode('topology')}
-              className={`flex items-center gap-1.5 px-3 py-1.2 rounded-md text-xs font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium transition-all ${
                 mode === 'topology'
-                  ? 'bg-[#004c22] text-white shadow-xs'
-                  : 'text-[#404940] hover:text-[#004c22]'
+                  ? 'bg-[var(--accent-primary)] text-[var(--button-text)] shadow-xs'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--accent-primary)]'
               }`}
             >
               <Network className="w-3.5 h-3.5" />
@@ -855,10 +861,10 @@ export const InteractiveD3Showcase: React.FC = () => {
             </button>
             <button
               onClick={() => setMode('mesh')}
-              className={`flex items-center gap-1.5 px-3 py-1.2 rounded-md text-xs font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium transition-all ${
                 mode === 'mesh'
-                  ? 'bg-[#004c22] text-white shadow-xs'
-                  : 'text-[#404940] hover:text-[#004c22]'
+                  ? 'bg-[var(--accent-primary)] text-[var(--button-text)] shadow-xs'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--accent-primary)]'
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
@@ -866,10 +872,10 @@ export const InteractiveD3Showcase: React.FC = () => {
             </button>
             <button
               onClick={() => setMode('cluster')}
-              className={`flex items-center gap-1.5 px-3 py-1.2 rounded-md text-xs font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium transition-all ${
                 mode === 'cluster'
-                  ? 'bg-[#004c22] text-white shadow-xs'
-                  : 'text-[#404940] hover:text-[#004c22]'
+                  ? 'bg-[var(--accent-primary)] text-[var(--button-text)] shadow-xs'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--accent-primary)]'
               }`}
             >
               <Server className="w-3.5 h-3.5" />
@@ -883,8 +889,8 @@ export const InteractiveD3Showcase: React.FC = () => {
               onClick={() => setActiveClusterFilter(null)}
               className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
                 activeClusterFilter === null
-                  ? 'bg-[#004c22] text-white border-[#004c22]'
-                  : 'bg-[#eef5ee] text-[#404940] border-[#004c22]/10 hover:border-[#004c22]/30'
+                  ? 'bg-[var(--accent-primary)] text-[var(--button-text)] border-[var(--border-color)]'
+                  : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] border-[var(--border-color)] hover:border-[var(--border-color)]'
               }`}
             >
               All Domains
@@ -895,8 +901,8 @@ export const InteractiveD3Showcase: React.FC = () => {
                 onClick={() => setActiveClusterFilter(activeClusterFilter === idx ? null : idx)}
                 className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors whitespace-nowrap ${
                   activeClusterFilter === idx
-                    ? 'bg-[#006d3e] text-white border-[#006d3e]'
-                    : 'bg-[#eef5ee]/80 text-[#404940] border-[#004c22]/10 hover:border-[#004c22]/30'
+                    ? 'bg-[var(--accent-secondary)] text-[var(--button-text)] border-[var(--accent-secondary)]'
+                    : 'bg-[var(--bg-secondary)]/80 text-[var(--text-secondary)] border-[var(--border-color)] hover:border-[var(--border-color)]'
                 }`}
               >
                 {c.name}
@@ -906,8 +912,9 @@ export const InteractiveD3Showcase: React.FC = () => {
         </div>
 
         {/* Canvas Area */}
-        <div ref={canvasContainerRef} className="relative w-full rounded-lg overflow-hidden border border-[#004c22]/10 bg-[#f4fbf4]/40">
+        <div ref={canvasContainerRef} className="relative w-full rounded-lg overflow-hidden border border-[var(--border-color)] bg-[var(--bg-primary)]/40">
           <canvas
+            aria-label="Interactive skill graph. The same skills are listed in the Core Stack section."
             ref={canvasRef}
             onMouseDown={handlePointerDown}
             onMouseMove={handlePointerMove}
@@ -924,53 +931,54 @@ export const InteractiveD3Showcase: React.FC = () => {
           />
 
           {/* Canvas Interactive Overlay Hint */}
-          <div className="absolute top-3 right-3 pointer-events-none flex items-center gap-1.5 bg-white/90 backdrop-blur-xs px-2.5 py-1 rounded-md border border-[#004c22]/10 text-[11px] text-[#404940] shadow-2xs">
-            <Touchpad className="w-3.5 h-3.5 text-[#006d3e]" />
+          <div className="absolute top-3 right-3 pointer-events-none hidden sm:flex items-center gap-1.5 bg-[var(--bg-card)]/90 backdrop-blur-xs px-2.5 py-1 rounded-md border border-[var(--border-color)] text-xs text-[var(--text-secondary)] shadow-2xs">
+            <Touchpad className="w-3.5 h-3.5 text-[var(--accent-secondary)]" />
             <span>Tap or drag bubbles to inspect knowledge topics</span>
           </div>
 
           {/* Selected Knowledge Node Telemetry Inspector Card */}
           {selectedNode && showInspector && (
-            <div className="absolute bottom-3 left-3 right-3 sm:right-auto sm:w-88 bg-white/95 backdrop-blur-md rounded-xl p-4 border border-[#004c22]/20 shadow-xl animate-in fade-in slide-in-from-bottom-3 duration-200 z-20">
-              <div className="flex items-center justify-between border-b border-[#004c22]/10 pb-2 mb-3">
+            <div className="absolute bottom-3 left-3 right-3 sm:right-auto sm:w-88 bg-[var(--bg-card)]/95 backdrop-blur-md rounded-xl p-4 border border-[var(--border-color)] shadow-xl animate-in fade-in slide-in-from-bottom-3 duration-200 z-20">
+              <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-2 mb-3">
                 <div className="flex items-center gap-2">
                   <span
                     className="w-3 h-3 rounded-full shrink-0"
                     style={{ backgroundColor: CLUSTERS[selectedNode.cluster % CLUSTERS.length].color }}
                   />
                   <div>
-                    <h4 className="font-semibold text-sm text-[#004c22] leading-tight">{selectedNode.label}</h4>
-                    <span className="text-[11px] text-[#707a6f] font-mono">{selectedNode.clusterName}</span>
+                    <h4 className="font-semibold text-sm text-[var(--accent-primary)] leading-tight">{selectedNode.label}</h4>
+                    <span className="text-xs text-[var(--text-muted)] font-mono">{selectedNode.clusterName}</span>
                   </div>
                 </div>
                 <button
+                  aria-label="Close skill details"
                   onClick={() => setShowInspector(false)}
-                  className="text-[#404940] hover:text-[#004c22] p-1 rounded-md hover:bg-[#eef5ee] transition-colors"
+                  className="text-[var(--text-secondary)] hover:text-[var(--accent-primary)] p-1 rounded-md hover:bg-[var(--bg-secondary)] transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <div className="space-y-3 text-xs text-[#404940]">
+              <div className="space-y-3 text-xs text-[var(--text-secondary)]">
                 {/* Metric Highlight Badge */}
-                <div className="flex items-center justify-between bg-[#eef5ee] px-3 py-1.5 rounded-lg border border-[#004c22]/10">
-                  <span className="text-[#707a6f] font-medium">Key Achievement:</span>
-                  <span className="font-mono font-semibold text-[#004c22]">{selectedNode.metric}</span>
+                <div className="flex items-center justify-between bg-[var(--bg-secondary)] px-3 py-1.5 rounded-lg border border-[var(--border-color)]">
+                  <span className="text-[var(--text-muted)] font-medium">Key Achievement:</span>
+                  <span className="font-mono font-semibold text-[var(--accent-primary)]">{selectedNode.metric}</span>
                 </div>
 
                 {/* Description */}
-                <p className="text-[#161d19] leading-relaxed">
+                <p className="text-[var(--text-primary)] leading-relaxed">
                   {selectedNode.description}
                 </p>
 
                 {/* Skill Tags */}
                 <div className="space-y-1">
-                  <span className="text-[11px] text-[#707a6f] font-medium uppercase tracking-wider block">Connected Tech:</span>
+                  <span className="text-xs text-[var(--text-muted)] font-medium uppercase tracking-wider block">Connected Tech:</span>
                   <div className="flex flex-wrap gap-1.5">
                     {selectedNode.tags.map(tag => (
                       <span
                         key={tag}
-                        className="px-2 py-0.5 rounded-md bg-[#f4fbf4] text-[#004c22] border border-[#004c22]/15 text-[11px] font-mono"
+                        className="px-2 py-0.5 rounded-md bg-[var(--bg-primary)] text-[var(--accent-primary)] border border-[var(--border-color)] text-xs font-mono"
                       >
                         {tag}
                       </span>
@@ -980,10 +988,10 @@ export const InteractiveD3Showcase: React.FC = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-2 mt-4 pt-3 border-t border-[#004c22]/10">
+              <div className="flex items-center gap-2 mt-4 pt-3 border-t border-[var(--border-color)]">
                 <button
                   onClick={triggerPulseSurge}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-1.5 bg-[#004c22] text-white text-xs font-medium rounded-md hover:bg-[#166534] transition-colors shadow-xs"
+                  className="flex-1 flex items-center justify-center gap-1.5 py-1.5 bg-[var(--accent-primary)] text-[var(--button-text)] text-xs font-medium rounded-md hover:brightness-110 transition-colors shadow-xs"
                 >
                   <Zap className="w-3.5 h-3.5 text-amber-300" />
                   <span>Pulse Knowledge Surge</span>
@@ -994,13 +1002,13 @@ export const InteractiveD3Showcase: React.FC = () => {
         </div>
 
         {/* Floating Canvas Action Controls */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-[#004c22]/10 mt-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-[var(--border-color)] mt-4">
           
           {/* Main Simulation Play/Pause & Scatter */}
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsRunning(!isRunning)}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#004c22] text-white text-xs font-medium hover:bg-[#166534] transition-all shadow-xs"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[var(--accent-primary)] text-[var(--button-text)] text-xs font-medium hover:brightness-110 transition-all shadow-xs"
             >
               {isRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
               <span>{isRunning ? 'Pause Engine' : 'Resume Engine'}</span>
@@ -1008,7 +1016,7 @@ export const InteractiveD3Showcase: React.FC = () => {
 
             <button
               onClick={handleScatter}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#eef5ee] text-[#004c22] text-xs font-medium hover:bg-[#dde4de] transition-colors border border-[#004c22]/10"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--accent-primary)] text-xs font-medium hover:bg-[var(--bg-card-hover)] transition-colors border border-[var(--border-color)]"
               title="Re-seed knowledge graph"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -1017,18 +1025,18 @@ export const InteractiveD3Showcase: React.FC = () => {
           </div>
 
           {/* Speed & Interactivity Options */}
-          <div className="flex items-center gap-4 text-xs text-[#404940]">
-            <div className="flex items-center gap-2 bg-[#f4fbf4] px-3 py-1 rounded-lg border border-[#004c22]/10">
-              <Sliders className="w-3.5 h-3.5 text-[#006d3e]" />
-              <span className="text-[#707a6f]">Speed:</span>
+          <div className="flex items-center gap-4 text-xs text-[var(--text-secondary)]">
+            <div className="flex items-center gap-2 bg-[var(--bg-primary)] px-3 py-1 rounded-lg border border-[var(--border-color)]">
+              <Sliders className="w-3.5 h-3.5 text-[var(--accent-secondary)]" />
+              <span className="text-[var(--text-muted)]">Speed:</span>
               {[0.5, 1, 2].map(spd => (
                 <button
                   key={spd}
                   onClick={() => setSimSpeed(spd)}
-                  className={`px-1.5 py-0.5 rounded font-mono text-[11px] font-medium transition-colors ${
+                  className={`px-1.5 py-0.5 rounded font-mono text-xs font-medium transition-colors ${
                     simSpeed === spd
-                      ? 'bg-[#004c22] text-white'
-                      : 'text-[#404940] hover:text-[#004c22]'
+                      ? 'bg-[var(--accent-primary)] text-[var(--button-text)]'
+                      : 'text-[var(--text-secondary)] hover:text-[var(--accent-primary)]'
                   }`}
                 >
                   {spd}x
@@ -1036,8 +1044,8 @@ export const InteractiveD3Showcase: React.FC = () => {
               ))}
             </div>
 
-            <div className="hidden sm:flex items-center gap-1.5 text-[#707a6f]">
-              <Touchpad className="w-3.5 h-3.5 text-[#006d3e]" />
+            <div className="hidden sm:flex items-center gap-1.5 text-[var(--text-muted)]">
+              <Touchpad className="w-3.5 h-3.5 text-[var(--accent-secondary)]" />
               <span>Mobile & Desktop Touch Ready</span>
             </div>
           </div>

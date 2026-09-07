@@ -1,81 +1,30 @@
 import React from 'react';
 import { PROJECT_SECTIONS } from '../data/portfolioData';
 import { ProjectItem } from '../types';
-import { ArrowUpRight, Code, Layers, Sparkles } from 'lucide-react';
+import { ArrowUpRight, Layers, Gauge, Network, Server, Workflow } from 'lucide-react';
 
-interface ProjectsWorkProps {
-  onSelectProject: (project: ProjectItem) => void;
-}
-
-export const ProjectsWork: React.FC<ProjectsWorkProps> = ({ onSelectProject }) => {
-  return (
-    <div id="work" className="space-y-[100px]">
-      {PROJECT_SECTIONS.map((section, sIdx) => (
-        <section key={section.id} className="scroll-mt-24 space-y-8">
-          {/* Section Heading */}
-          <div className="border-b border-[#004c22]/15 pb-4 flex items-baseline justify-between">
-            <h2 className="font-serif text-3xl md:text-[32px] font-medium text-[#004c22]">
-              {section.title}
-            </h2>
-            <span className="text-xs font-mono text-[#707a6f] tracking-wider uppercase">
-              0{sIdx + 2} // Domain
-            </span>
-          </div>
-
-          {/* Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
-            {section.items.map((item) => {
-              const isFull = item.fullWidth;
-              return (
-                <div
-                  key={item.id}
-                  onClick={() => onSelectProject(item)}
-                  className={`emerald-card rounded-xl p-7 md:p-8 cursor-pointer group flex flex-col justify-between transition-all duration-300 relative overflow-hidden ${
-                    isFull ? 'md:col-span-2' : ''
-                  }`}
-                >
-                  {/* Subtle top-right accent hover glow */}
-                  <div className="absolute top-0 right-0 w-28 h-28 bg-gradient-to-bl from-[#86efac]/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-
-                  <div>
-                    <div className="flex items-start justify-between gap-4 mb-3">
-                      <h3 className="font-serif text-2xl md:text-[25px] font-medium text-[#004c22] group-hover:text-[#064e3b] transition-colors leading-snug">
-                        {item.title}
-                      </h3>
-                      <div className="w-8 h-8 rounded-full bg-[#f4fbf4] border border-[#004c22]/10 flex items-center justify-center text-[#004c22] group-hover:bg-[#004c22] group-hover:text-white transition-all shrink-0">
-                        <ArrowUpRight className="w-4 h-4 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                      </div>
-                    </div>
-
-                    <p className="text-[#404940] text-[15.5px] md:text-[16px] leading-relaxed mb-6">
-                      {item.description}
-                    </p>
-                  </div>
-
-                  {/* Footer Tags & Deep Dive Trigger */}
-                  <div className="pt-4 border-t border-[#004c22]/8 flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex flex-wrap gap-1.5">
-                      {item.tags?.map((tag, tIdx) => (
-                        <span
-                          key={tIdx}
-                          className="text-xs px-2.5 py-0.5 rounded-full bg-[#f4fbf4] text-[#006d3e] font-medium border border-[#004c22]/8"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-
-                    <span className="text-xs font-medium text-[#004c22] opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                      <span>View Architecture</span>
-                      <ArrowUpRight className="w-3 h-3" />
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      ))}
+interface ProjectsWorkProps { onSelectProject: (project: ProjectItem) => void; }
+const icons = [Layers, Gauge, Network, Server, Workflow];
+export const ProjectsWork: React.FC<ProjectsWorkProps> = ({ onSelectProject }) => (
+  <section id="work" className="space-y-12">
+    <div className="flex flex-wrap items-end justify-between gap-4 pb-6 border-b border-[var(--border-color)]">
+      <div><p className="hero-kicker mb-3">01 / Selected work</p><h2 className="text-4xl md:text-5xl">Built for the real world.</h2></div>
+      <span className="text-sm text-[var(--text-muted)]">Architecture, performance & everything between.</span>
     </div>
-  );
-};
+    {PROJECT_SECTIONS.map((section, index) => {
+      const Icon = icons[index];
+      return <div key={section.id} className="space-y-5">
+        <div className="flex items-center gap-3"><Icon size={18} className="text-[var(--accent-primary)]" /><h3 className="!font-sans text-base font-semibold tracking-tight">{section.title}</h3><span className="ml-auto text-xs font-mono text-[var(--text-muted)]">0{index + 1}</span></div>
+        <div className="grid md:grid-cols-2 gap-5">
+          {section.items.map(item => <button key={item.id} id={`project-${item.id}`} onClick={() => onSelectProject(item)} aria-haspopup="dialog" className={`project-card emerald-card rounded-xl p-6 md:p-8 group flex flex-col ${item.fullWidth ? 'md:col-span-2 !min-h-0' : ''}`}>
+            <div className="flex items-start gap-4 justify-between mb-4"><h4 className="text-xl md:text-2xl font-semibold tracking-tight max-w-lg">{item.title}</h4><span className="project-arrow w-9 h-9 rounded-full shrink-0 border border-[var(--border-color)] flex items-center justify-center transition-colors"><ArrowUpRight size={18} /></span></div>
+            <p className="text-base leading-relaxed text-[var(--text-secondary)] max-w-3xl mb-6">{item.description}</p>
+            {item.architectureDetails?.metrics?.[0] && <p className="project-metric mb-5">↗ {item.architectureDetails.metrics[0]}</p>}
+            <div className="mt-auto pt-4 border-t border-[var(--border-color)] flex flex-wrap gap-2">{item.tags?.map(tag => <span key={tag} className="text-xs text-[var(--text-muted)] rounded border border-[var(--border-color)] px-2.5 py-1">{tag}</span>)}</div>
+            <span className="text-sm mt-5 text-[var(--accent-primary)]">Explore the architecture <span aria-hidden="true">↗</span></span>
+          </button>)}
+        </div>
+      </div>;
+    })}
+  </section>
+);

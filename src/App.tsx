@@ -18,6 +18,7 @@ import { ResumeModal } from './components/ResumeModal';
 import { ContactModal } from './components/ContactModal';
 import { ProjectDetailModal } from './components/ProjectDetailModal';
 import { ArticleModal } from './components/ArticleModal';
+import { CommandPalette } from './components/CommandPalette';
 import { ProjectItem, ArticleItem } from './types';
 
 export default function App() {
@@ -25,9 +26,22 @@ export default function App() {
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
   const [selectedArticle, setSelectedArticle] = useState<ArticleItem | null>(null);
-  const [activeSection, setActiveSection] = useState('work');
+  const [activeSection, setActiveSection] = useState('hero');
+  const [isPaletteOpen, setIsPaletteOpen] = useState(false);
 
   const mainRef = useRef<HTMLElement>(null);
+
+  // Keyboard shortcut: Cmd+K / Ctrl+K for Command Palette
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        if (!isResumeOpen && !isContactOpen && !selectedProject && !selectedArticle) setIsPaletteOpen(prev => !prev);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isResumeOpen, isContactOpen, selectedProject, selectedArticle]);
 
   // Scroll spy for active section in navigation
   useEffect(() => {
@@ -38,7 +52,7 @@ export default function App() {
       for (const sectionId of sections) {
         const el = document.getElementById(sectionId);
         if (el) {
-          const top = el.offsetTop;
+          const top = el.getBoundingClientRect().top + window.scrollY;
           const height = el.offsetHeight;
           if (scrollPos >= top && scrollPos < top + height) {
             setActiveSection(sectionId);
@@ -48,12 +62,14 @@ export default function App() {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // GSAP Scroll Reveal for sections and cards
   useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const ctx = gsap.context(() => {
       const observerOptions: IntersectionObserverInit = {
         root: null,
@@ -90,23 +106,37 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#f4fbf4] text-[#161d19] font-sans antialiased selection:bg-[#8cf5b2] selection:text-[#004c22]">
+    <div
+      className="min-h-screen font-sans antialiased relative"
+      style={{
+        backgroundColor: 'var(--bg-primary)',
+        color: 'var(--text-primary)',
+      }}
+    >
+      <a href="#main-content" className="skip-link">Skip to content</a>
       {/* Fixed Navigation Header */}
       <Navbar
         onOpenContact={() => setIsContactOpen(true)}
         activeSection={activeSection}
+        onOpenPalette={() => setIsPaletteOpen(true)}
       />
 
-      {/* Main Container matching the 900px centered editorial layout */}
+      {/* Main portfolio content */}
       <main
+        id="main-content"
         ref={mainRef}
-        className="max-w-[900px] mx-auto px-6 md:px-12 pt-28 pb-16 space-y-[100px] md:space-y-[120px]"
+        className="relative z-10 max-w-[1180px] mx-auto px-6 md:px-12 pt-28 pb-16 space-y-[100px] md:space-y-[120px]"
       >
-        {/* Hero Section with GSAP 3D Emerald Gemstone */}
+        {/* Introduction and interactive WebGL experiment */}
         <Hero
           onOpenResume={() => setIsResumeOpen(true)}
           onOpenContact={() => setIsContactOpen(true)}
         />
+
+        {/* Technical Architecture & Projects */}
+        <div className="scroll-reveal">
+          <ProjectsWork onSelectProject={(p) => setSelectedProject(p)} />
+        </div>
 
         {/* About Section */}
         <div className="scroll-reveal">
@@ -116,11 +146,6 @@ export default function App() {
         {/* Core Stack Section */}
         <div className="scroll-reveal">
           <CoreStack />
-        </div>
-
-        {/* Technical Architecture & Projects */}
-        <div className="scroll-reveal">
-          <ProjectsWork onSelectProject={(p) => setSelectedProject(p)} />
         </div>
 
         {/* Interactive Real-time D3 Engine Demonstration */}
@@ -143,6 +168,14 @@ export default function App() {
       <Footer
         onOpenContact={() => setIsContactOpen(true)}
         onOpenResume={() => setIsResumeOpen(true)}
+      />
+
+      {/* Command Palette (⌘K) */}
+      <CommandPalette
+        onSelectProject={setSelectedProject}
+        onSelectArticle={setSelectedArticle}
+        isOpen={isPaletteOpen}
+        onClose={() => setIsPaletteOpen(false)}
       />
 
       {/* Modals & Overlays */}

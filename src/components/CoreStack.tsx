@@ -1,127 +1,112 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { CORE_STACK_CATEGORIES, CORE_STACK_LIST } from '../data/portfolioData';
-import { 
-  Code2, 
-  Cpu, 
-  LineChart, 
-  Radio, 
-  Boxes, 
-  Server, 
-  Sparkles,
-  LayoutGrid,
-  List
-} from 'lucide-react';
+import { Code2, Cpu, LineChart, Radio, Boxes, Server, Sparkles, LayoutGrid, List } from 'lucide-react';
+
+const CATEGORY_COLORS = [
+  'var(--accent-primary)',    // Frameworks — red
+  'var(--accent-secondary)',  // Systems — purple
+  'var(--neon-blue)',         // Visualization — cyan
+  'var(--accent-tertiary)',   // Real-time — magenta
+  'var(--neon-purple)',       // Architecture — violet
+  'var(--accent-primary)',    // Infra — red
+];
+
+const TiltCard: React.FC<{ children: React.ReactNode; className?: string; accentColor: string }> = ({ children, className = '', accentColor }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    const card = cardRef.current;
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -5;
+    const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 5;
+    card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-3px)`;
+    card.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
+    card.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    const card = cardRef.current;
+    if (card) card.style.transform = 'perspective(800px) rotateX(0) rotateY(0) translateY(0)';
+  }, []);
+
+  return (
+    <div ref={cardRef} className={`tilt-card relative ${className}`} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}
+      style={{ transition: 'transform 0.15s ease-out', '--tilt-accent': accentColor } as React.CSSProperties}>
+      <div className="tilt-card-shine" />
+      {children}
+    </div>
+  );
+};
 
 export const CoreStack: React.FC = () => {
   const [viewMode, setViewMode] = useState<'bento' | 'list'>('bento');
-  const [selectedTech, setSelectedTech] = useState<string | null>(null);
 
-  const getCategoryIcon = (iconName: string) => {
+  const getCategoryIcon = (iconName: string, color: string) => {
+    const style = { color };
     switch (iconName) {
-      case 'code':
-        return <Code2 className="w-5 h-5 text-[#006d3e]" />;
-      case 'memory':
-        return <Cpu className="w-5 h-5 text-[#006d3e]" />;
-      case 'monitoring':
-        return <LineChart className="w-5 h-5 text-[#006d3e]" />;
-      case 'sync_alt':
-        return <Radio className="w-5 h-5 text-[#006d3e]" />;
-      case 'account_tree':
-        return <Boxes className="w-5 h-5 text-[#006d3e]" />;
-      case 'dns':
-        return <Server className="w-5 h-5 text-[#006d3e]" />;
-      default:
-        return <Sparkles className="w-5 h-5 text-[#006d3e]" />;
+      case 'code': return <Code2 className="w-5 h-5" style={style} />;
+      case 'memory': return <Cpu className="w-5 h-5" style={style} />;
+      case 'monitoring': return <LineChart className="w-5 h-5" style={style} />;
+      case 'sync_alt': return <Radio className="w-5 h-5" style={style} />;
+      case 'account_tree': return <Boxes className="w-5 h-5" style={style} />;
+      case 'dns': return <Server className="w-5 h-5" style={style} />;
+      default: return <Sparkles className="w-5 h-5" style={style} />;
     }
   };
 
   return (
-    <section id="stack" className="scroll-mt-24 space-y-8">
-      {/* Section Header */}
-      <div className="border-b border-[#004c22]/15 pb-4 flex items-center justify-between">
-        <h2 className="font-serif text-3xl md:text-[32px] font-medium text-[#004c22]">
-          Core Stack
-        </h2>
-        
-        {/* View Switcher */}
-        <div className="flex items-center gap-1 bg-[#eef5ee] p-1 rounded-lg border border-[#004c22]/10">
-          <button
-            onClick={() => setViewMode('bento')}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-all ${
-              viewMode === 'bento'
-                ? 'bg-white text-[#004c22] shadow-xs'
-                : 'text-[#404940] hover:text-[#004c22]'
-            }`}
-            title="Bento Grid View"
-          >
-            <LayoutGrid className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Bento Grid</span>
+    <section id="stack" className="scroll-mt-24 space-y-8 relative">
+      <span className="section-number">03</span>
+      <div className="pb-4 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border-hover)' }}>
+        <h2 className="font-heading text-3xl md:text-[34px] font-bold" style={{ color: 'var(--text-primary)' }}>Core Stack</h2>
+        <div className="flex items-center gap-1 p-1 rounded-lg border" style={{ backgroundColor: 'var(--surface-hover)', borderColor: 'var(--border-color)' }}>
+          <button aria-label="Grid view" aria-pressed={viewMode === 'bento'} onClick={() => setViewMode('bento')} className="flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-all"
+            style={{ backgroundColor: viewMode === 'bento' ? 'var(--bg-card)' : 'transparent', color: viewMode === 'bento' ? 'var(--accent-primary)' : 'var(--text-secondary)' }}>
+            <LayoutGrid className="w-3.5 h-3.5" /><span className="hidden sm:inline">Grid</span>
           </button>
-          <button
-            onClick={() => setViewMode('list')}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-all ${
-              viewMode === 'list'
-                ? 'bg-white text-[#004c22] shadow-xs'
-                : 'text-[#404940] hover:text-[#004c22]'
-            }`}
-            title="Concise List View"
-          >
-            <List className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">List View</span>
+          <button aria-label="List view" aria-pressed={viewMode === 'list'} onClick={() => setViewMode('list')} className="flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-all"
+            style={{ backgroundColor: viewMode === 'list' ? 'var(--bg-card)' : 'transparent', color: viewMode === 'list' ? 'var(--accent-primary)' : 'var(--text-secondary)' }}>
+            <List className="w-3.5 h-3.5" /><span className="hidden sm:inline">List</span>
           </button>
         </div>
       </div>
 
-      {/* Bento Grid View (Image 4) */}
       {viewMode === 'bento' ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {CORE_STACK_CATEGORIES.map((cat, idx) => (
-            <div
-              key={idx}
-              className="emerald-card p-6 rounded-xl flex flex-col justify-between gap-4 cursor-default group"
-            >
-              <div className="flex items-start justify-between">
-                <div className="w-11 h-11 rounded-xl bg-[#eef5ee] group-hover:bg-[#8cf5b2]/30 flex items-center justify-center transition-colors">
-                  {getCategoryIcon(cat.icon)}
+          {CORE_STACK_CATEGORIES.map((cat, idx) => {
+            const accent = CATEGORY_COLORS[idx] || 'var(--accent-primary)';
+            return (
+              <TiltCard key={idx} className="miles-card miles-card-stripe p-6 rounded-xl flex flex-col justify-between gap-4 cursor-default" accentColor={accent}>
+                <div className="relative z-10 flex items-start justify-between">
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'var(--surface-hover)' }}>
+                    {getCategoryIcon(cat.icon, accent)}
+                  </div>
+                  <span className="text-xs font-mono px-2 py-0.5 rounded border" style={{ color: 'var(--text-muted)', backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border-color)' }}>0{idx + 1}</span>
                 </div>
-                <span className="text-[11px] font-mono text-[#707a6f] bg-[#f4fbf4] px-2 py-0.5 rounded border border-[#004c22]/10">
-                  0{idx + 1}
-                </span>
-              </div>
-
-              <div>
-                <h3 className="font-serif text-lg font-medium text-[#004c22] mb-1">
-                  {cat.title}
-                </h3>
-                <p className="text-sm text-[#404940] leading-snug mb-3 font-normal">
-                  {cat.subtitle}
-                </p>
-
-                {/* Sub-item pills */}
-                <div className="flex flex-wrap gap-1.5 pt-2 border-t border-[#004c22]/5">
-                  {cat.items.map((item, itemIdx) => (
-                    <span
-                      key={itemIdx}
-                      className="text-[11px] px-2 py-0.5 rounded bg-[#f4fbf4] text-[#006d3e] font-medium border border-[#004c22]/8"
-                    >
-                      {item}
-                    </span>
-                  ))}
+                <div className="relative z-10">
+                  <h3 className="font-heading text-lg font-bold mb-1" style={{ color: accent }}>{cat.title}</h3>
+                  <p className="text-sm leading-snug mb-3" style={{ color: 'var(--text-secondary)' }}>{cat.subtitle}</p>
+                  <div className="flex flex-wrap gap-1.5 pt-2" style={{ borderTop: '1px solid var(--border-color)' }}>
+                    {cat.items.map((item, iIdx) => (
+                      <span key={iIdx} className="text-xs px-2 py-0.5 rounded font-medium border"
+                        style={{ backgroundColor: 'var(--bg-primary)', color: accent, borderColor: 'var(--border-color)' }}>{item}</span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              </TiltCard>
+            );
+          })}
         </div>
       ) : (
-        /* Concise Card List View (Image 2) */
-        <div className="emerald-card rounded-xl p-8 shadow-[0_4px_20px_rgba(0,76,34,0.04)]">
-          <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+        <div className="miles-card rounded-xl p-8">
+          <ul className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
             {CORE_STACK_LIST.map((item, idx) => (
               <li key={idx} className="flex items-center gap-3 py-1 group">
-                <span className="w-2 h-2 rounded-full bg-[#006d3e] group-hover:scale-150 transition-transform" />
-                <span className="text-[16px] text-[#161d19] font-normal group-hover:text-[#004c22] transition-colors">
-                  {item}
-                </span>
+                <span className="w-2 h-2 rounded-full group-hover:scale-150 transition-transform" style={{ backgroundColor: 'var(--accent-primary)' }} />
+                <span className="text-[16px] group-hover:text-[var(--accent-primary)] transition-colors" style={{ color: 'var(--text-primary)' }}>{item}</span>
               </li>
             ))}
           </ul>

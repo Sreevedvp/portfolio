@@ -1,21 +1,28 @@
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sreeved V P - Engineering Craft</title>
-    <meta name="description" content="Portfolio of Sreeved V P, Software Engineer based in India. Crafting precise, scalable systems and robust architectures." />
-    <meta property="og:title" content="Sreeved V P - Engineering Craft" />
-    <meta property="og:description" content="Portfolio of Sreeved V P, Software Engineer based in India. Crafting precise, scalable systems and robust architectures." />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#0a0a0f" />
+    <title>Sreeved V P — Engineering Craft</title>
+    <meta name="description" content="Portfolio of Sreeved V P, Software Engineer. Precision systems, scalable architectures." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <script>
+    {
+      let stored;
+      try { stored = localStorage.getItem('portfolio-theme'); } catch {}
+      if (stored === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.querySelector('meta[name="theme-color"]').content = '#f5f3ee';
+      }
+    }
+    </script>
   </head>
-  <body class="bg-[#f4fbf4] text-[#161d19] font-sans antialiased selection:bg-[#8cf5b2] selection:text-[#004c22]">
+  <body class="font-sans antialiased">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-
