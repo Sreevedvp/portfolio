@@ -1,44 +1,22 @@
 import React from 'react';
-import { BioElectricSphere } from './BioElectricSphere';
 import { HERO_DATA, PROJECT_SECTIONS } from '../data/portfolioData';
-import { ArrowDown, ArrowUpRight, FileText, Github, Linkedin } from 'lucide-react';
+import { ArrowDown, ArrowUpRight, FileText, Github, Linkedin, Zap } from 'lucide-react';
 
 interface HeroProps { onOpenResume: () => void; onOpenContact: () => void; }
-
 export const Hero: React.FC<HeroProps> = ({ onOpenResume, onOpenContact }) => (
-  <section id="hero" className="relative pt-8 md:pt-16">
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center">
-      <div className="relative z-10">
-        <div className="hero-kicker flex items-center gap-3 mb-7">
-          <span className="w-2 h-2 rounded-full bg-[var(--neon-green)]" />
-          Available for opportunities
-        </div>
-        <h1 className="hero-title">SREEVED<br /><span>V P.</span></h1>
-        <p className="mt-7 text-xl md:text-2xl font-medium tracking-tight">Frontend craft.<br />Systems thinking.</p>
-        <p className="mt-4 max-w-md text-base leading-relaxed text-[var(--text-secondary)]">{HERO_DATA.shortBio}</p>
-        <div className="flex flex-wrap gap-3 mt-7">
-          <a href="#work" className="primary-button">Explore my work <ArrowUpRight size={17} /></a>
-          <button onClick={onOpenResume} className="secondary-button"><FileText size={16} /> View résumé</button>
-        </div>
-        <div className="flex flex-wrap items-center gap-5 mt-7 text-sm text-[var(--text-muted)]">
-          <a href={HERO_DATA.socials.github} target="_blank" rel="noreferrer" aria-label="GitHub profile"><Github size={18} /></a>
-          <a href={HERO_DATA.socials.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn profile"><Linkedin size={18} /></a>
-          <span className="h-4 border-l border-[var(--border-color)]" />
-          <button onClick={onOpenContact} className="hover:text-[var(--accent-primary)]">Let's talk <span aria-hidden="true">↗</span></button>
-        </div>
+  <section id="hero" className="comic-hero">
+    <div className="comic-status-line"><span><i /> ONLINE: BUILDING THINGS FOR THE WEB</span><span>HYDERABAD, INDIA // PORTFOLIO 2026</span></div>
+    <div className="comic-hero-grid">
+      <div className="comic-hero-copy">
+        <div className="comic-eyebrow"><span className="comic-label">HELLO, WORLD ↗</span><span className="comic-label yellow">SREEVED V P</span><span className="comic-issue">// VOL. 01</span></div>
+        <h1 className="comic-hero-title">FRONTEND <em>ENGINEER.</em><br />SYSTEMS THINKER.<br /><span>CREATIVE BUILDER.</span></h1>
+        <p className="comic-intro">{HERO_DATA.shortBio} From expressive interfaces to real-time experiences, I make complex things feel simple.</p>
+        <div className="comic-hero-actions"><a href="#work" className="primary-button"><Zap size={16} />Explore the work <ArrowUpRight size={16} /></a><button onClick={onOpenContact} className="secondary-button">Have an idea? Let's talk <ArrowUpRight size={16} /></button></div>
+        <div className="comic-hero-socials"><span className="comic-availability"><i />AVAILABLE FOR OPPORTUNITIES</span><a href={HERO_DATA.socials.github} target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={17} /></a><a href={HERO_DATA.socials.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn"><Linkedin size={17} /></a><button onClick={onOpenResume}><FileText size={15} />Résumé</button></div>
       </div>
-      <div className="hero-stage h-[390px] lg:h-[490px]">
-        <div className="hero-stage-label"><span>EXPERIMENT 001</span><span>WEBGL / THREE.JS</span></div>
-        <BioElectricSphere className="w-full h-full" />
-      </div>
+      <figure className="comic-portrait"><div className="comic-portrait-top"><span>CREATIVE ENERGY / ALWAYS ON</span><span>FIG. 01</span></div><img src={`${import.meta.env.BASE_URL}assets/comic/studio.jpg`} alt="Comic-book illustration of a creative working in a neon-filled studio" width="640" height="640" fetchPriority="high" /><figcaption><span>CODE. CREATE. REPEAT.</span><Zap size={16} /><span>NO ORDINARY WORKDAY</span></figcaption></figure>
     </div>
-    <div className="mt-14 md:mt-20 grid grid-cols-2 md:grid-cols-4 border-y border-[var(--border-color)]">
-      {[['3.5+', 'Years of experience'], [String(PROJECT_SECTIONS.flatMap(s => s.items).length).padStart(2, '0'), 'Selected projects'], ['60 FPS', 'Rendering focus'], ['06', 'Core disciplines']].map(([value, label]) => (
-        <div className="stat-card" key={label}><div className="stat-number">{value}</div><div className="stat-label">{label}</div></div>
-      ))}
-    </div>
-    <div className="flex justify-between items-center mt-6 hero-kicker !tracking-normal">
-      <span>{HERO_DATA.location}</span><a href="#work" className="flex items-center gap-2">Scroll to explore <ArrowDown size={14} /></a>
-    </div>
+    <div className="comic-stats">{[['3.5+', 'Years of experience', 'FRONTEND & BEYOND'], [String(PROJECT_SECTIONS.flatMap(s => s.items).length).padStart(2, '0'), 'Selected projects', 'BUILT FOR THE REAL WORLD'], ['60 FPS', 'Rendering focus', 'SMOOTH UNDER PRESSURE'], ['06', 'Core disciplines', 'ONE CONNECTED TOOLKIT']].map(([value,label,note],index) => <div key={label} className={`comic-stat accent-${index}`}><p>{label}</p><strong>{value}</strong><span>{note}</span><div className="comic-meter" aria-hidden="true" /></div>)}</div>
+    <a href="#about" className="comic-scroll">KEEP EXPLORING <ArrowDown size={13} /></a>
   </section>
 );

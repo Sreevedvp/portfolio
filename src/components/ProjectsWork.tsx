@@ -1,30 +1,28 @@
 import React from 'react';
 import { PROJECT_SECTIONS } from '../data/portfolioData';
 import { ProjectItem } from '../types';
-import { ArrowUpRight, Layers, Gauge, Network, Server, Workflow } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, Layers, Box, GitBranch, Terminal } from 'lucide-react';
 
 interface ProjectsWorkProps { onSelectProject: (project: ProjectItem) => void; }
-const icons = [Layers, Gauge, Network, Server, Workflow];
+const featuredIds = ['angular-mfe', 'd3-three-engine', 'rust-retrieval', 'k8s-helm'];
+const projects = PROJECT_SECTIONS.flatMap(section => section.items);
+
+function ProjectVisual({ index }: { index: number }) {
+  if (index === 1 || index === 2) return <div className="comic-project-image"><img loading="lazy" src={`${import.meta.env.BASE_URL}assets/comic/${index === 1 ? 'network' : 'radar'}.jpg`} alt={index === 1 ? 'Concept artwork of a neon data visualization interface' : 'Concept artwork of a real-time systems radar'} width="720" height="420" /><span className="comic-preview-note">CONCEPT VISUAL // {index === 1 ? 'DATA IN MOTION' : 'SYSTEMS ONLINE'}</span></div>;
+  const deployment = index === 3;
+  return <div className={`comic-diagram ${deployment ? 'diagram-pipeline' : ''}`} aria-label={deployment ? 'Deployment flow from source to pipeline to cluster' : 'Micro-frontend architecture with a shared shell and independent apps'}>
+    <div className="diagram-topline"><span>{deployment ? 'DEPLOYMENT CONTROL' : 'NX / MODULE FEDERATION'}</span><span>● LIVE ARCHITECTURE</span></div>
+    <div className="diagram-root">{deployment ? <GitBranch size={24} /> : <Layers size={24} />}<span>{deployment ? 'GITLAB CI/CD' : 'APPLICATION SHELL'}</span></div>
+    <div className="diagram-connectors" aria-hidden="true" />
+    <div className="diagram-children">{(deployment ? ['BUILD', 'VALIDATE', 'DEPLOY'] : ['ANALYTICS', 'WORKSPACE', 'SHARED UI']).map(label => <span key={label}><Box size={18} />{label}</span>)}</div>
+    <div className="diagram-bottom"><Terminal size={13} /><span>{deployment ? 'helm upgrade → rolling deployment' : 'Independent domains. Shared foundations.'}</span><ArrowRight size={14} /></div>
+  </div>;
+}
+
 export const ProjectsWork: React.FC<ProjectsWorkProps> = ({ onSelectProject }) => (
-  <section id="work" className="space-y-12">
-    <div className="flex flex-wrap items-end justify-between gap-4 pb-6 border-b border-[var(--border-color)]">
-      <div><p className="hero-kicker mb-3">01 / Selected work</p><h2 className="text-4xl md:text-5xl">Built for the real world.</h2></div>
-      <span className="text-sm text-[var(--text-muted)]">Architecture, performance & everything between.</span>
-    </div>
-    {PROJECT_SECTIONS.map((section, index) => {
-      const Icon = icons[index];
-      return <div key={section.id} className="space-y-5">
-        <div className="flex items-center gap-3"><Icon size={18} className="text-[var(--accent-primary)]" /><h3 className="!font-sans text-base font-semibold tracking-tight">{section.title}</h3><span className="ml-auto text-xs font-mono text-[var(--text-muted)]">0{index + 1}</span></div>
-        <div className="grid md:grid-cols-2 gap-5">
-          {section.items.map(item => <button key={item.id} id={`project-${item.id}`} onClick={() => onSelectProject(item)} aria-haspopup="dialog" className={`project-card emerald-card rounded-xl p-6 md:p-8 group flex flex-col ${item.fullWidth ? 'md:col-span-2 !min-h-0' : ''}`}>
-            <div className="flex items-start gap-4 justify-between mb-4"><h4 className="text-xl md:text-2xl font-semibold tracking-tight max-w-lg">{item.title}</h4><span className="project-arrow w-9 h-9 rounded-full shrink-0 border border-[var(--border-color)] flex items-center justify-center transition-colors"><ArrowUpRight size={18} /></span></div>
-            <p className="text-base leading-relaxed text-[var(--text-secondary)] max-w-3xl mb-6">{item.description}</p>
-            {item.architectureDetails?.metrics?.[0] && <p className="project-metric mb-5">↗ {item.architectureDetails.metrics[0]}</p>}
-            <div className="mt-auto pt-4 border-t border-[var(--border-color)] flex flex-wrap gap-2">{item.tags?.map(tag => <span key={tag} className="text-xs text-[var(--text-muted)] rounded border border-[var(--border-color)] px-2.5 py-1">{tag}</span>)}</div>
-            <span className="text-sm mt-5 text-[var(--accent-primary)]">Explore the architecture <span aria-hidden="true">↗</span></span>
-          </button>)}
-        </div>
-      </div>;
-    })}
+  <section id="work" className="comic-work">
+    <div className="comic-section-heading"><div><p className="comic-label yellow">02 / FIELD NOTES FROM THE BUILD</p><h2 className="comic-heading chromatic">FEATURED <em>MISSIONS & LABS</em></h2></div><p>Scalable platforms, real-time interfaces, and the systems that keep them running. A few problems I've enjoyed solving.</p></div>
+    <div className="comic-project-grid">{featuredIds.map((id,index) => { const item=projects.find(project => project.id === id)!; return <button type="button" key={id} id={`project-${id}`} className={`comic-project accent-${index}`} onClick={() => onSelectProject(item)} aria-haspopup="dialog"><div className="comic-project-top"><span>MISSION 0{index + 1} / {item.tags?.[0]}</span><ArrowUpRight size={17} /></div><ProjectVisual index={index} /><div className="comic-project-body"><div className="comic-project-tags">{item.tags?.slice(0,3).map(tag => <span key={tag}>{tag}</span>)}</div><h3>{item.title}</h3><p>{item.description}</p><div className="comic-project-bottom"><span>{item.architectureDetails?.metrics?.[0]}</span><span>OPEN CASE STUDY ↗</span></div></div></button>; })}</div>
+    <details className="comic-more-work"><summary>MORE FROM THE ARCHIVE <span>{projects.length - featuredIds.length} MORE PROJECTS <span aria-hidden="true">＋</span></span></summary><div className="comic-archive-grid">{projects.filter(item => !featuredIds.includes(item.id)).map(item => <button type="button" key={item.id} id={`project-${item.id}`} onClick={() => onSelectProject(item)} aria-haspopup="dialog"><span className="comic-issue">{item.tags?.[0]}</span><h3>{item.title} <ArrowUpRight size={17} /></h3><p>{item.description}</p></button>)}</div></details>
   </section>
 );

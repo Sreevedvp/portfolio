@@ -7,8 +7,8 @@ export const Experience: React.FC = () => {
     <section id="experience" className="scroll-mt-24 space-y-8">
       {/* Header */}
       <div className="pb-4 flex items-baseline justify-between" style={{ borderBottom: '1px solid var(--border-hover)' }}>
-        <h2 className="font-serif text-3xl md:text-[32px] font-medium" style={{ color: 'var(--emerald-primary)' }}>
-          Experience
+        <h2 className="comic-heading" style={{ color: 'var(--emerald-primary)' }}>
+          THE STORY <em>SO FAR.</em>
         </h2>
         <span className="text-xs font-mono tracking-wider uppercase" style={{ color: 'var(--text-muted)' }}>
           05 // Career

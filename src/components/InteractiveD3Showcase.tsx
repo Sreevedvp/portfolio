@@ -1,25 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import {
-  Play,
-  Pause,
-  Activity,
-  Plus,
-  Zap,
-  Sliders,
-  Layers,
-  X,
-  MousePointer,
-  Network,
-  RotateCcw,
-  Server,
-  Brain,
-  Code2,
-  Cpu,
-  Boxes,
-  Compass,
-  Touchpad,
-  Sparkles
-} from 'lucide-react';
+import { Play, Pause, Zap, Layers, X, Network, RotateCcw, Server, Brain, Code2, Cpu, Boxes, Touchpad } from 'lucide-react';
+import { nearestNode, constrainPoint } from '../utils/graphInteraction';
 
 interface KnowledgeNode {
   id: number;
@@ -56,12 +37,12 @@ interface Shockwave {
 }
 
 const CLUSTERS = [
-  { name: 'Angular & Frontend', color: '#ffd600', highlight: '#4ade80', icon: Code2 },
-  { name: 'Data Visualization', color: '#00c4dd', highlight: '#86efac', icon: Network },
-  { name: 'Rust & Systems', color: '#b388ff', highlight: '#34d399', icon: Cpu },
-  { name: 'React & UI Craft', color: '#ff668e', highlight: '#6ee7b7', icon: Boxes },
-  { name: 'Cloud & DevOps', color: '#69dca9', highlight: '#a7f3d0', icon: Server },
-  { name: 'AI & Automation', color: '#ffb86c', highlight: '#bbf7d0', icon: Brain },
+  { name: 'Angular & Frontend', color: '#ffd600', highlight: '#fff09b', icon: Code2 },
+  { name: 'Data Visualization', color: '#00c4dd', highlight: '#8eeeff', icon: Network },
+  { name: 'Rust & Systems', color: '#b388ff', highlight: '#ddcaff', icon: Cpu },
+  { name: 'React & UI Craft', color: '#ff668e', highlight: '#ffb4ca', icon: Boxes },
+  { name: 'Cloud & DevOps', color: '#69dca9', highlight: '#b4f4d4', icon: Server },
+  { name: 'AI & Automation', color: '#ffb86c', highlight: '#ffdab4', icon: Brain },
 ];
 
 // Definition of Sreeved's Architecture Knowledge Mesh
@@ -246,7 +227,8 @@ export const InteractiveD3Showcase: React.FC = () => {
 
   // Control States
   const [isRunning, setIsRunning] = useState(() => !window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-  const [fps, setFps] = useState(60);
+  const [fps, setFps] = useState(0);
+  const [touchDrag, setTouchDrag] = useState(false);
   const [simSpeed, setSimSpeed] = useState(1);
   const [mode, setMode] = useState<'topology' | 'mesh' | 'cluster'>('topology');
   const [activeClusterFilter, setActiveClusterFilter] = useState<number | null>(null);
@@ -254,7 +236,6 @@ export const InteractiveD3Showcase: React.FC = () => {
   // Interactive States
   const [hoveredNode, setHoveredNode] = useState<KnowledgeNode | null>(null);
   const [selectedNode, setSelectedNode] = useState<KnowledgeNode | null>(null);
-  const [showInspector, setShowInspector] = useState(false);
   const [activeConnectionsCount, setActiveConnectionsCount] = useState(0);
 
   // Animation & Physics Refs
@@ -267,10 +248,14 @@ export const InteractiveD3Showcase: React.FC = () => {
   const draggedNodeRef = useRef<KnowledgeNode | null>(null);
   const dragOffsetRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
+  const pointerRef = useRef<{ id: number; x: number; y: number; moved: boolean; node: KnowledgeNode | null } | null>(null);
+  const dimensionsRef = useRef({ width: 0, height: 0 });
+  const reducedMotion = useRef(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
   // Initialize Knowledge Graph Data
   const initKnowledgeGraph = useCallback(() => {
     const width = canvasContainerRef.current?.clientWidth || 800;
-    const height = window.innerWidth < 640 ? 320 : 420;
+    const height = width < 560 ? 380 : 460;
 
     const newNodes: KnowledgeNode[] = [];
     const newEdges: Edge[] = [];
@@ -373,12 +358,19 @@ export const InteractiveD3Showcase: React.FC = () => {
     if (!ctx) return;
 
     let width = container.clientWidth;
-    let height = window.innerWidth < 640 ? 320 : 420;
+    let height = width < 560 ? 380 : 460;
 
     const setupCanvasScale = () => {
-      const dpr = window.devicePixelRatio || 1;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       width = container.clientWidth;
-      height = window.innerWidth < 640 ? 320 : 420;
+      height = width < 560 ? 380 : 460;
+      const previous = dimensionsRef.current;
+      for (const node of nodesRef.current) {
+        const x = previous.width ? node.x * width / previous.width : node.x;
+        const y = previous.height ? node.y * height / previous.height : node.y;
+        Object.assign(node, constrainPoint(x, y, node.radius, width, height));
+      }
+      dimensionsRef.current = { width, height };
 
       canvas.width = width * dpr;
       canvas.height = height * dpr;
@@ -464,7 +456,7 @@ export const InteractiveD3Showcase: React.FC = () => {
           } else if (mode === 'mesh') {
             // Ring Mesh Layout
             const clusterIdx = node.cluster;
-            const radius = 80 + clusterIdx * 25;
+            const radius = Math.min(width, height) * (0.15 + clusterIdx * 0.04);
             const angleSpeed = (0.004 + (clusterIdx % 3) * 0.002) * speed;
             const currentAngle = Math.atan2(node.y - centerY, node.x - centerX) + angleSpeed;
 
@@ -546,9 +538,11 @@ export const InteractiveD3Showcase: React.FC = () => {
 
         ctx.beginPath();
         ctx.arc(wave.x, wave.y, wave.radius, 0, Math.PI * 2);
-        ctx.strokeStyle = wave.color.replace(')', `, ${wave.alpha})`).replace('rgb', 'rgba');
+        ctx.strokeStyle = wave.color;
+        ctx.globalAlpha = wave.alpha;
         ctx.lineWidth = 2;
         ctx.stroke();
+        ctx.globalAlpha = 1;
       }
 
       // Determine active focus selections
@@ -572,7 +566,7 @@ export const InteractiveD3Showcase: React.FC = () => {
         if (!s || !t) continue;
 
         const isFiltered = activeClusterFilter !== null &&
-          (s.cluster !== activeClusterFilter && t.cluster !== activeClusterFilter);
+          (s.cluster !== activeClusterFilter || t.cluster !== activeClusterFilter);
 
         const isConnected = focusedNode ? (s.id === focusedNode.id || t.id === focusedNode.id) : true;
         const opacity = isFiltered ? 0.03 : (focusedNode ? (isConnected ? 0.85 : 0.06) : (edge.isCrossHub ? 0.18 : 0.35));
@@ -594,12 +588,14 @@ export const InteractiveD3Showcase: React.FC = () => {
           ctx.setLineDash([]);
         }
 
-        ctx.strokeStyle = opacity > 0.1 ? grad : `rgba(140, 150, 180, ${opacity})`;
+        ctx.strokeStyle = grad;
+        ctx.globalAlpha = opacity;
         ctx.beginPath();
         ctx.moveTo(s.x, s.y);
         ctx.lineTo(t.x, t.y);
         ctx.stroke();
-        ctx.setLineDash([]); // Reset line dash
+        ctx.setLineDash([]);
+        ctx.globalAlpha = 1;
 
         // Traveling pulse particles along links
         if (!isFiltered && isRunning && (i % 2 === 0 || isConnected)) {
@@ -632,14 +628,14 @@ export const InteractiveD3Showcase: React.FC = () => {
         const isConnectedPeer = focusedNode && connectedNodeIds.has(node.id);
         const isClusterFiltered = activeClusterFilter !== null && node.cluster !== activeClusterFilter;
 
-        const baseAlpha = isClusterFiltered ? 0.2 : (focusedNode ? (isConnectedPeer ? 1 : 0.25) : 1);
+        const baseAlpha = isClusterFiltered ? 0.08 : (focusedNode ? (isConnectedPeer ? 1 : 0.25) : 1);
 
         // Outer Glowing Aura & Ping Animation for Hubs or Selected Nodes
-        if (isFocused || node.isHub) {
-          const pulseRadius = node.radius + (node.isHub ? 7 : 5) + Math.sin(time * 0.006 + node.id) * 3;
+        if (!isClusterFiltered && (isFocused || node.isHub)) {
+          const pulseRadius = node.radius + (node.isHub ? 7 : 5) + (isRunning && !reducedMotion.current ? Math.sin(time * 0.006 + node.id) * 3 : 0);
           ctx.beginPath();
           ctx.arc(node.x, node.y, pulseRadius, 0, Math.PI * 2);
-          ctx.fillStyle = isFocused ? 'rgba(74, 222, 128, 0.3)' : 'rgba(0, 76, 34, 0.08)';
+          ctx.fillStyle = clusterMeta.color + (isFocused ? '30' : '12');
           ctx.fill();
         }
 
@@ -648,23 +644,30 @@ export const InteractiveD3Showcase: React.FC = () => {
         ctx.globalAlpha = baseAlpha;
         ctx.beginPath();
         ctx.arc(node.x, node.y, node.radius + (isFocused ? 3.5 : 0), 0, Math.PI * 2);
-        ctx.fillStyle = isFocused ? clusterMeta.highlight : clusterMeta.color;
+        ctx.fillStyle = isFocused ? clusterMeta.color : (light ? '#ffffff' : '#171720');
         ctx.fill();
 
         // Node Border Stroke (Thicker for Main Hubs)
-        ctx.strokeStyle = isFocused ? '#ffffff' : (node.isHub ? clusterMeta.highlight : 'rgba(255, 255, 255, 0.9)');
+        ctx.strokeStyle = clusterMeta.color;
         ctx.lineWidth = node.isHub ? 2.5 : (isFocused ? 2.0 : 1.2);
         ctx.stroke();
         ctx.restore();
 
         // Label Rendering
-        if (node.isHub || isFocused || (width > 600 && !isClusterFiltered)) {
+        if (!isClusterFiltered && (node.isHub || isFocused)) {
           ctx.save();
           ctx.globalAlpha = baseAlpha;
           ctx.fillStyle = light ? '#24242c' : '#d7d7e2';
           ctx.font = `${node.isHub || isFocused ? '600' : '500'} ${node.isHub ? '13px' : '12px'} Inter, sans-serif`;
           ctx.textAlign = 'center';
-          ctx.fillText(node.label, node.x, node.y + node.radius + (node.isHub ? 16 : 13));
+          const label = width < 560 && node.isHub ? CLUSTERS[node.cluster].name.split(' & ')[0] : node.label;
+          const labelWidth = ctx.measureText(label).width;
+          const labelX = Math.max(labelWidth / 2 + 6, Math.min(width - labelWidth / 2 - 6, node.x));
+          const labelY = Math.min(height - 10, node.y + node.radius + 19);
+          ctx.fillStyle = light ? '#f5f3ee' : '#0a0a0f';
+          ctx.fillRect(labelX - labelWidth / 2 - 4, labelY - 13, labelWidth + 8, 18);
+          ctx.fillStyle = light ? '#24242c' : '#d7d7e2';
+          ctx.fillText(label, labelX, labelY);
           ctx.restore();
         }
       }
@@ -681,108 +684,72 @@ export const InteractiveD3Showcase: React.FC = () => {
     };
   }, [isRunning, simSpeed, mode, activeClusterFilter, hoveredNode, selectedNode]);
 
-  // -------------------------------------------------------------
-  // Pointer / Touch Coordinates & Collision Logic
-  // -------------------------------------------------------------
-  const getCanvasCoords = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return { x: 0, y: 0 };
-    const rect = canvas.getBoundingClientRect();
-    let clientX = 0;
-    let clientY = 0;
-
-    if ('touches' in e && e.touches.length > 0) {
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    } else if ('changedTouches' in e && e.changedTouches.length > 0) {
-      clientX = e.changedTouches[0].clientX;
-      clientY = e.changedTouches[0].clientY;
-    } else if ('clientX' in e) {
-      clientX = e.clientX;
-      clientY = e.clientY;
-    }
-
-    return {
-      x: clientX - rect.left,
-      y: clientY - rect.top,
-    };
+  const getCanvasCoords = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const { width, height } = dimensionsRef.current;
+    return { x: (e.clientX - rect.left) * width / rect.width, y: (e.clientY - rect.top) * height / rect.height };
   };
 
-  const findNodeAtCoords = (x: number, y: number): KnowledgeNode | null => {
-    for (const node of nodesRef.current) {
-      const dx = x - node.x;
-      const dy = y - node.y;
-      // Increased hit radius for touch friendliness (minimum 20px hit target)
-      const hitThreshold = Math.max(22, node.radius + 10);
-      if (Math.sqrt(dx * dx + dy * dy) <= hitThreshold) {
-        return node;
-      }
-    }
-    return null;
+  const endDrag = () => {
+    if (draggedNodeRef.current) draggedNodeRef.current.pinned = false;
+    draggedNodeRef.current = null;
+    pointerRef.current = null;
   };
 
-  // Interactive Touch & Mouse Event Handlers
-  const handlePointerDown = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    // Prevent default on touch to stop window scrolling during graph interaction
-    if ('touches' in e) {
-      e.preventDefault();
-    }
-
+  const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!e.isPrimary || e.button !== 0 || pointerRef.current) return;
     const coords = getCanvasCoords(e);
-    const node = findNodeAtCoords(coords.x, coords.y);
-
-    if (node) {
+    const node = nearestNode<KnowledgeNode>(nodesRef.current, coords.x, coords.y, activeClusterFilter, e.pointerType !== 'mouse');
+    pointerRef.current = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false, node };
+    if (node && (e.pointerType === 'mouse' || touchDrag)) {
+      e.currentTarget.setPointerCapture(e.pointerId);
       draggedNodeRef.current = node;
       node.pinned = true;
       dragOffsetRef.current = { x: coords.x - node.x, y: coords.y - node.y };
-      setSelectedNode(node);
-      setShowInspector(true);
-    } else {
-      // Click shockwave ripple on background
-      shockwavesRef.current.push({
-        x: coords.x,
-        y: coords.y,
-        radius: 4,
-        maxRadius: 80,
-        alpha: 0.8,
-        color: 'rgb(74, 222, 128)',
-      });
-      setSelectedNode(null);
     }
   };
 
-  const handlePointerMove = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    if ('touches' in e && draggedNodeRef.current) {
-      e.preventDefault();
-    }
-
+  const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const pointer = pointerRef.current;
+    if (pointer && pointer.id !== e.pointerId) return;
     const coords = getCanvasCoords(e);
-
-    if (draggedNodeRef.current) {
-      draggedNodeRef.current.x = coords.x - dragOffsetRef.current.x;
-      draggedNodeRef.current.y = coords.y - dragOffsetRef.current.y;
-      draggedNodeRef.current.vx = 0;
-      draggedNodeRef.current.vy = 0;
-    } else {
-      const hovered = findNodeAtCoords(coords.x, coords.y);
-      setHoveredNode(hovered);
+    if (pointer && Math.hypot(e.clientX - pointer.x, e.clientY - pointer.y) > 8) pointer.moved = true;
+    const node = draggedNodeRef.current;
+    if (node) {
+      const { width, height } = dimensionsRef.current;
+      Object.assign(node, constrainPoint(coords.x - dragOffsetRef.current.x, coords.y - dragOffsetRef.current.y, node.radius, width, height), { vx: 0, vy: 0 });
+    } else if (e.pointerType === 'mouse') {
+      setHoveredNode(nearestNode<KnowledgeNode>(nodesRef.current, coords.x, coords.y, activeClusterFilter, false));
     }
   };
 
-  const handlePointerUp = (e?: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    if (draggedNodeRef.current) {
-      draggedNodeRef.current.pinned = false;
-      draggedNodeRef.current = null;
-    }
+  const handlePointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const pointer = pointerRef.current;
+    if (!pointer || pointer.id !== e.pointerId) return;
+    if (!pointer.moved || draggedNodeRef.current) setSelectedNode(pointer.node);
+    setHoveredNode(null);
+    endDrag();
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
+  };
+
+  const selectCluster = (cluster: number | null) => {
+    endDrag();
+    setActiveClusterFilter(cluster);
+    setSelectedNode(null);
+    setHoveredNode(null);
   };
 
   // Control Actions
   const handleScatter = () => {
+    endDrag();
+    setSelectedNode(null);
+    setHoveredNode(null);
+    shockwavesRef.current = [];
     initKnowledgeGraph();
   };
 
   const triggerPulseSurge = () => {
-    if (!selectedNode) return;
+    if (!selectedNode || reducedMotion.current) return;
     shockwavesRef.current.push({
       x: selectedNode.x,
       y: selectedNode.y,
@@ -801,255 +768,53 @@ export const InteractiveD3Showcase: React.FC = () => {
     });
   };
 
-  return (
-    <section id="visualizer" className="scroll-mt-24 space-y-6">
-      {/* Section Header */}
-      <div className="border-b border-[var(--border-color)] pb-4 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <div className="flex flex-wrap items-center gap-2">
-            <h2 className="font-serif text-3xl md:text-[32px] font-medium text-[var(--accent-primary)]">
-              An interconnected skill set
-            </h2>
-            <span className="bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] text-xs font-mono px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1">
-              <Sparkles className="w-3 h-3 text-emerald-600" />
-              Live Mesh
-            </span>
-          </div>
-          <p className="text-sm text-[var(--text-secondary)] mt-1">
-            Tap or drag any node (e.g. <strong>Angular</strong>, <strong>Data Visualization</strong>, <strong>Rust</strong>) to inspect specialized engineering topics, metrics, and architecture patterns.
-          </p>
-        </div>
+  const visibleNodes = nodesRef.current.filter(node => activeClusterFilter === null || node.cluster === activeClusterFilter);
+  const layouts = [{ id: 'topology', label: 'Topology', icon: Network }, { id: 'mesh', label: 'Orbit', icon: Layers }, { id: 'cluster', label: 'Clusters', icon: Server }] as const;
 
-        {/* Live Telemetry Badge */}
-        <div className="flex items-center gap-3 bg-[var(--bg-secondary)] px-3.5 py-1.5 rounded-full border border-[var(--border-color)] shadow-xs">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 -ml-4" />
-            <span className="text-xs font-mono font-medium text-[var(--accent-primary)]">
-              {fps} FPS
-            </span>
-          </div>
-          <span className="text-[var(--accent-primary)]/20">|</span>
-          <span className="text-xs font-mono text-[var(--text-secondary)]">
-            {nodesRef.current.length} Knowledge Nodes
-          </span>
-          <span className="text-[var(--accent-primary)]/20">|</span>
-          <span className="text-xs font-mono text-[var(--text-secondary)]">
-            {activeConnectionsCount} Links
-          </span>
-        </div>
+  return (
+    <section id="visualizer" className="skill-graph space-y-6">
+      <div className="graph-heading">
+        <div><p className="hero-kicker mb-3">04 / Interactive playground</p><h2 className="comic-heading chromatic">CONNECT <em>THE DOTS.</em></h2><p className="text-base text-[var(--text-secondary)] mt-3">Explore the technologies behind my work. Select a node to go deeper.</p></div>
+        <div className="graph-telemetry" aria-label="Graph status"><span className="graph-status-dot" /><span>{isRunning ? `${fps} FPS` : 'PAUSED'}</span><span>{nodesRef.current.length} nodes</span><span>{activeConnectionsCount} links</span></div>
       </div>
 
-      {/* Main Visualizer Container */}
-      <div className="emerald-card rounded-xl p-4 md:p-6 relative overflow-hidden bg-[var(--bg-card)] shadow-sm border border-[var(--border-color)]">
-        
-        {/* Top Control Bar: Mode Switching & Cluster Filters */}
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-          
-          {/* Mode Switcher */}
-          <div className="flex items-center bg-[var(--bg-primary)] p-1 rounded-lg border border-[var(--border-color)]">
-            <button
-              onClick={() => setMode('topology')}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium transition-all ${
-                mode === 'topology'
-                  ? 'bg-[var(--accent-primary)] text-[var(--button-text)] shadow-xs'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--accent-primary)]'
-              }`}
-            >
-              <Network className="w-3.5 h-3.5" />
-              <span>Topology Force</span>
-            </button>
-            <button
-              onClick={() => setMode('mesh')}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium transition-all ${
-                mode === 'mesh'
-                  ? 'bg-[var(--accent-primary)] text-[var(--button-text)] shadow-xs'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--accent-primary)]'
-              }`}
-            >
-              <Layers className="w-3.5 h-3.5" />
-              <span>Orbital Mesh</span>
-            </button>
-            <button
-              onClick={() => setMode('cluster')}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium transition-all ${
-                mode === 'cluster'
-                  ? 'bg-[var(--accent-primary)] text-[var(--button-text)] shadow-xs'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--accent-primary)]'
-              }`}
-            >
-              <Server className="w-3.5 h-3.5" />
-              <span>Constellations</span>
-            </button>
+      <div className="graph-panel">
+        <div className="graph-toolbar">
+          <div className="graph-segments" role="group" aria-label="Graph layout">
+            {layouts.map(({ id, label, icon: Icon }) => <button key={id} type="button" aria-pressed={mode === id} onClick={() => setMode(id)}><Icon size={16} /><span>{label}</span></button>)}
           </div>
-
-          {/* Cluster Filter Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full no-scrollbar">
-            <button
-              onClick={() => setActiveClusterFilter(null)}
-              className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
-                activeClusterFilter === null
-                  ? 'bg-[var(--accent-primary)] text-[var(--button-text)] border-[var(--border-color)]'
-                  : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] border-[var(--border-color)] hover:border-[var(--border-color)]'
-              }`}
-            >
-              All Domains
-            </button>
-            {CLUSTERS.map((c, idx) => (
-              <button
-                key={c.name}
-                onClick={() => setActiveClusterFilter(activeClusterFilter === idx ? null : idx)}
-                className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors whitespace-nowrap ${
-                  activeClusterFilter === idx
-                    ? 'bg-[var(--accent-secondary)] text-[var(--button-text)] border-[var(--accent-secondary)]'
-                    : 'bg-[var(--bg-secondary)]/80 text-[var(--text-secondary)] border-[var(--border-color)] hover:border-[var(--border-color)]'
-                }`}
-              >
-                {c.name}
-              </button>
-            ))}
-          </div>
+          <span className="graph-toolbar-caption">ENGINEERING, INTERCONNECTED</span>
         </div>
 
-        {/* Canvas Area */}
-        <div ref={canvasContainerRef} className="relative w-full rounded-lg overflow-hidden border border-[var(--border-color)] bg-[var(--bg-primary)]/40">
-          <canvas
-            aria-label="Interactive skill graph. The same skills are listed in the Core Stack section."
-            ref={canvasRef}
-            onMouseDown={handlePointerDown}
-            onMouseMove={handlePointerMove}
-            onMouseUp={handlePointerUp}
-            onMouseLeave={() => {
-              handlePointerUp();
-              setHoveredNode(null);
-            }}
-            onTouchStart={handlePointerDown}
-            onTouchMove={handlePointerMove}
-            onTouchEnd={handlePointerUp}
-            style={{ touchAction: 'none' }}
-            className="w-full cursor-grab active:cursor-grabbing select-none"
-          />
-
-          {/* Canvas Interactive Overlay Hint */}
-          <div className="absolute top-3 right-3 pointer-events-none hidden sm:flex items-center gap-1.5 bg-[var(--bg-card)]/90 backdrop-blur-xs px-2.5 py-1 rounded-md border border-[var(--border-color)] text-xs text-[var(--text-secondary)] shadow-2xs">
-            <Touchpad className="w-3.5 h-3.5 text-[var(--accent-secondary)]" />
-            <span>Tap or drag bubbles to inspect knowledge topics</span>
-          </div>
-
-          {/* Selected Knowledge Node Telemetry Inspector Card */}
-          {selectedNode && showInspector && (
-            <div className="absolute bottom-3 left-3 right-3 sm:right-auto sm:w-88 bg-[var(--bg-card)]/95 backdrop-blur-md rounded-xl p-4 border border-[var(--border-color)] shadow-xl animate-in fade-in slide-in-from-bottom-3 duration-200 z-20">
-              <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-2 mb-3">
-                <div className="flex items-center gap-2">
-                  <span
-                    className="w-3 h-3 rounded-full shrink-0"
-                    style={{ backgroundColor: CLUSTERS[selectedNode.cluster % CLUSTERS.length].color }}
-                  />
-                  <div>
-                    <h4 className="font-semibold text-sm text-[var(--accent-primary)] leading-tight">{selectedNode.label}</h4>
-                    <span className="text-xs text-[var(--text-muted)] font-mono">{selectedNode.clusterName}</span>
-                  </div>
-                </div>
-                <button
-                  aria-label="Close skill details"
-                  onClick={() => setShowInspector(false)}
-                  className="text-[var(--text-secondary)] hover:text-[var(--accent-primary)] p-1 rounded-md hover:bg-[var(--bg-secondary)] transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              <div className="space-y-3 text-xs text-[var(--text-secondary)]">
-                {/* Metric Highlight Badge */}
-                <div className="flex items-center justify-between bg-[var(--bg-secondary)] px-3 py-1.5 rounded-lg border border-[var(--border-color)]">
-                  <span className="text-[var(--text-muted)] font-medium">Key Achievement:</span>
-                  <span className="font-mono font-semibold text-[var(--accent-primary)]">{selectedNode.metric}</span>
-                </div>
-
-                {/* Description */}
-                <p className="text-[var(--text-primary)] leading-relaxed">
-                  {selectedNode.description}
-                </p>
-
-                {/* Skill Tags */}
-                <div className="space-y-1">
-                  <span className="text-xs text-[var(--text-muted)] font-medium uppercase tracking-wider block">Connected Tech:</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {selectedNode.tags.map(tag => (
-                      <span
-                        key={tag}
-                        className="px-2 py-0.5 rounded-md bg-[var(--bg-primary)] text-[var(--accent-primary)] border border-[var(--border-color)] text-xs font-mono"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex items-center gap-2 mt-4 pt-3 border-t border-[var(--border-color)]">
-                <button
-                  onClick={triggerPulseSurge}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-1.5 bg-[var(--accent-primary)] text-[var(--button-text)] text-xs font-medium rounded-md hover:brightness-110 transition-colors shadow-xs"
-                >
-                  <Zap className="w-3.5 h-3.5 text-amber-300" />
-                  <span>Pulse Knowledge Surge</span>
-                </button>
-              </div>
-            </div>
-          )}
+        <div className="graph-domains" role="group" aria-label="Filter by domain">
+          <button type="button" aria-pressed={activeClusterFilter === null} onClick={() => selectCluster(null)}>All domains</button>
+          {CLUSTERS.map((cluster, index) => <button type="button" key={cluster.name} aria-pressed={activeClusterFilter === index} onClick={() => selectCluster(activeClusterFilter === index ? null : index)}><span style={{ background: cluster.color }} />{cluster.name}</button>)}
+        </div>
+        <div className="graph-selectors">
+          <label className="graph-domain-select">Domain<select value={activeClusterFilter ?? 'all'} onChange={e => selectCluster(e.target.value === 'all' ? null : Number(e.target.value))}><option value="all">All domains</option>{CLUSTERS.map((cluster, index) => <option key={cluster.name} value={index}>{cluster.name}</option>)}</select></label>
+          <label>Explore a topic<select value={selectedNode?.id ?? ''} onChange={e => { setHoveredNode(null); setSelectedNode(nodesRef.current.find(node => node.id === Number(e.target.value)) ?? null); }}><option value="" disabled>Select a node or choose here</option>{visibleNodes.map(node => <option key={node.id} value={node.id}>{node.label}</option>)}</select></label>
         </div>
 
-        {/* Floating Canvas Action Controls */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-[var(--border-color)] mt-4">
-          
-          {/* Main Simulation Play/Pause & Scatter */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setIsRunning(!isRunning)}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[var(--accent-primary)] text-[var(--button-text)] text-xs font-medium hover:brightness-110 transition-all shadow-xs"
-            >
-              {isRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-              <span>{isRunning ? 'Pause Engine' : 'Resume Engine'}</span>
-            </button>
+        <div className="graph-canvas" ref={canvasContainerRef}>
+          <canvas ref={canvasRef} aria-label="Interactive skill graph. Choose a topic from the selector above for keyboard access." onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={endDrag} onLostPointerCapture={endDrag} onPointerLeave={() => setHoveredNode(null)} style={{ touchAction: touchDrag ? 'none' : 'pan-y pinch-zoom' }} />
+          <span className="graph-canvas-label" aria-hidden="true">{activeClusterFilter === null ? 'THE KNOWLEDGE NETWORK' : CLUSTERS[activeClusterFilter].name.toUpperCase()}</span>
+        </div>
+        <div className="graph-gesture-bar">
+          <p id="graph-gesture-help"><Touchpad size={16} /><span>{touchDrag ? 'Drag a node to move it. Turn off to scroll the page.' : 'Tap a node to inspect. Swipe to scroll the page.'}</span></p>
+          <button type="button" aria-pressed={touchDrag} aria-describedby="graph-gesture-help" onClick={() => { endDrag(); setTouchDrag(value => !value); }}>Drag nodes <span className="graph-toggle" /></button>
+        </div>
 
-            <button
-              onClick={handleScatter}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--accent-primary)] text-xs font-medium hover:bg-[var(--bg-card-hover)] transition-colors border border-[var(--border-color)]"
-              title="Re-seed knowledge graph"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>Scatter Mesh</span>
-            </button>
-          </div>
+        {selectedNode && <div className="graph-inspector" role="region" aria-label="Selected topic" aria-live="polite">
+          <div className="graph-inspector-header"><div><p className="hero-kicker mb-2">{selectedNode.clusterName}</p><h3 className="!font-sans text-xl font-semibold tracking-tight">{selectedNode.label}</h3></div><button type="button" className="graph-icon-button" aria-label="Close topic details" onClick={() => { setSelectedNode(null); setHoveredNode(null); }}><X size={18} /></button></div>
+          <p className="graph-inspector-metric">{selectedNode.metric}</p>
+          <p className="text-base leading-relaxed text-[var(--text-secondary)]">{selectedNode.description}</p>
+          <div className="graph-tags">{selectedNode.tags.map(tag => <span key={tag}>{tag}</span>)}</div>
+          {!reducedMotion.current && <button type="button" className="graph-pulse" onClick={triggerPulseSurge}><Zap size={16} />Pulse connections</button>}
+        </div>}
 
-          {/* Speed & Interactivity Options */}
-          <div className="flex items-center gap-4 text-xs text-[var(--text-secondary)]">
-            <div className="flex items-center gap-2 bg-[var(--bg-primary)] px-3 py-1 rounded-lg border border-[var(--border-color)]">
-              <Sliders className="w-3.5 h-3.5 text-[var(--accent-secondary)]" />
-              <span className="text-[var(--text-muted)]">Speed:</span>
-              {[0.5, 1, 2].map(spd => (
-                <button
-                  key={spd}
-                  onClick={() => setSimSpeed(spd)}
-                  className={`px-1.5 py-0.5 rounded font-mono text-xs font-medium transition-colors ${
-                    simSpeed === spd
-                      ? 'bg-[var(--accent-primary)] text-[var(--button-text)]'
-                      : 'text-[var(--text-secondary)] hover:text-[var(--accent-primary)]'
-                  }`}
-                >
-                  {spd}x
-                </button>
-              ))}
-            </div>
-
-            <div className="hidden sm:flex items-center gap-1.5 text-[var(--text-muted)]">
-              <Touchpad className="w-3.5 h-3.5 text-[var(--accent-secondary)]" />
-              <span>Mobile & Desktop Touch Ready</span>
-            </div>
-          </div>
-
+        <div className="graph-controls">
+          <div className="graph-playback"><button type="button" className="graph-play" aria-pressed={isRunning} onClick={() => setIsRunning(value => !value)}>{isRunning ? <Pause size={16} /> : <Play size={16} />}{isRunning ? 'Pause' : 'Resume'}</button><button type="button" className="graph-reset" onClick={handleScatter}><RotateCcw size={16} />Reset</button></div>
+          <div className="graph-speed"><span>Speed</span><div className="graph-segments" role="group" aria-label="Animation speed">{[0.5, 1, 2].map(speed => <button type="button" key={speed} aria-pressed={simSpeed === speed} onClick={() => setSimSpeed(speed)}>{speed}×</button>)}</div></div>
         </div>
       </div>
     </section>

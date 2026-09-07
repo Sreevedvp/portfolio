@@ -12,8 +12,8 @@ export const Writing: React.FC<WritingProps> = ({ onSelectArticle }) => {
     <section id="writing" className="scroll-mt-24 space-y-8">
       {/* Header */}
       <div className="pb-4 flex items-baseline justify-between" style={{ borderBottom: '1px solid var(--border-hover)' }}>
-        <h2 className="font-serif text-3xl md:text-[32px] font-medium" style={{ color: 'var(--emerald-primary)' }}>
-          Writing
+        <h2 className="comic-heading chromatic" style={{ color: 'var(--emerald-primary)' }}>
+          NOTES FROM <em>THE NETWORK.</em>
         </h2>
         <span className="text-xs font-mono tracking-wider uppercase" style={{ color: 'var(--text-muted)' }}>
           06 // Notes
@@ -21,7 +21,7 @@ export const Writing: React.FC<WritingProps> = ({ onSelectArticle }) => {
       </div>
 
       {/* Articles List */}
-      <div className="space-y-5">
+      <div className="comic-writing-grid">
         {WRITING_DATA.map((article) => (
           <button
             type="button" aria-haspopup="dialog"
@@ -51,7 +51,7 @@ export const Writing: React.FC<WritingProps> = ({ onSelectArticle }) => {
 
               {/* Title */}
               <div className="flex items-start justify-between gap-4 mb-2">
-                <h3 className="font-serif text-2xl md:text-[25px] font-medium transition-colors leading-snug" style={{ color: 'var(--emerald-primary)' }}>
+                <h3 className="font-heading text-3xl font-medium transition-colors leading-snug" style={{ color: 'var(--emerald-primary)' }}>
                   {article.title}
                 </h3>
                 <div

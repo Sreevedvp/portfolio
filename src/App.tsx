@@ -107,7 +107,7 @@ export default function App() {
 
   return (
     <div
-      className="min-h-screen font-sans antialiased relative"
+      className="comic-portfolio min-h-screen font-sans antialiased relative"
       style={{
         backgroundColor: 'var(--bg-primary)',
         color: 'var(--text-primary)',
@@ -125,22 +125,22 @@ export default function App() {
       <main
         id="main-content"
         ref={mainRef}
-        className="relative z-10 max-w-[1180px] mx-auto px-6 md:px-12 pt-28 pb-16 space-y-[100px] md:space-y-[120px]"
+        className="relative z-10 max-w-[1280px] mx-auto px-6 md:px-12 pt-24 pb-8 space-y-20 md:space-y-24"
       >
-        {/* Introduction and interactive WebGL experiment */}
+        {/* Comic introduction and reference artwork */}
         <Hero
           onOpenResume={() => setIsResumeOpen(true)}
           onOpenContact={() => setIsContactOpen(true)}
         />
 
-        {/* Technical Architecture & Projects */}
-        <div className="scroll-reveal">
-          <ProjectsWork onSelectProject={(p) => setSelectedProject(p)} />
-        </div>
-
         {/* About Section */}
         <div className="scroll-reveal">
           <About />
+        </div>
+
+        {/* Technical Architecture & Projects */}
+        <div className="scroll-reveal">
+          <ProjectsWork onSelectProject={(p) => setSelectedProject(p)} />
         </div>
 
         {/* Core Stack Section */}

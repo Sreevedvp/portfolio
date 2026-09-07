@@ -59,9 +59,9 @@ export const CoreStack: React.FC = () => {
 
   return (
     <section id="stack" className="scroll-mt-24 space-y-8 relative">
-      <span className="section-number">03</span>
+      <p className="comic-label">03 / TOOLS OF THE TRADE</p>
       <div className="pb-4 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border-hover)' }}>
-        <h2 className="font-heading text-3xl md:text-[34px] font-bold" style={{ color: 'var(--text-primary)' }}>Core Stack</h2>
+        <h2 className="comic-heading" style={{ color: 'var(--text-primary)' }}>WEAPONS OF <em>CREATIVE CHOICE.</em></h2>
         <div className="flex items-center gap-1 p-1 rounded-lg border" style={{ backgroundColor: 'var(--surface-hover)', borderColor: 'var(--border-color)' }}>
           <button aria-label="Grid view" aria-pressed={viewMode === 'bento'} onClick={() => setViewMode('bento')} className="flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-all"
             style={{ backgroundColor: viewMode === 'bento' ? 'var(--bg-card)' : 'transparent', color: viewMode === 'bento' ? 'var(--accent-primary)' : 'var(--text-secondary)' }}>
@@ -87,7 +87,7 @@ export const CoreStack: React.FC = () => {
                   <span className="text-xs font-mono px-2 py-0.5 rounded border" style={{ color: 'var(--text-muted)', backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border-color)' }}>0{idx + 1}</span>
                 </div>
                 <div className="relative z-10">
-                  <h3 className="font-heading text-lg font-bold mb-1" style={{ color: accent }}>{cat.title}</h3>
+                  <h3 className="font-heading text-2xl font-bold mb-2" style={{ color: accent }}>{cat.title}</h3>
                   <p className="text-sm leading-snug mb-3" style={{ color: 'var(--text-secondary)' }}>{cat.subtitle}</p>
                   <div className="flex flex-wrap gap-1.5 pt-2" style={{ borderTop: '1px solid var(--border-color)' }}>
                     {cat.items.map((item, iIdx) => (
