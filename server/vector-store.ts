@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
-import { knowledgeNamespace, type KnowledgeChunk } from './knowledge';
-import { getJson, postJson, required, serviceUrl, ServiceError, vectorCommand, type Environment } from './providers';
+import { knowledgeNamespace, type KnowledgeChunk } from './knowledge.js';
+import { getJson, postJson, required, serviceUrl, ServiceError, vectorCommand, type Environment } from './providers.js';
 
 export interface VectorStore { mode: 'hosted' | 'openrouter'; model: string; dimension: number; namespace: string }
 

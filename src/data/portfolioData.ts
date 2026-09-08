@@ -1,4 +1,4 @@
-import { StackItem, ProjectSection, ExperienceItem, ArticleItem } from '../types';
+import type { StackItem, ProjectSection, ExperienceItem, ArticleItem } from '../types.js';
 
 export const HERO_DATA = {
   name: "Sreeved V P",

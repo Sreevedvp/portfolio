@@ -145,5 +145,7 @@ test('browser sends only messages and handles static hosting, unsafe links and r
     await assert.rejects(sendChat(messages as any, signal, '/api/chat'), /not connected/);
     globalThis.fetch = async () => new Response('', { status: 429 });
     await assert.rejects(sendChat(messages as any, signal, '/api/chat'), /request limit/);
+    globalThis.fetch = async () => new Response('FUNCTION_INVOCATION_FAILED', { status: 500, headers: { 'Content-Type': 'text/plain' } });
+    await assert.rejects(sendChat(messages as any, signal, '/api/chat'), /temporarily unavailable/);
   } finally { globalThis.fetch = original; }
 });

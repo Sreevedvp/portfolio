@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
-import { HERO_DATA, CORE_STACK_LIST, CORE_STACK_CATEGORIES, PROJECT_SECTIONS, EXPERIENCE_DATA } from '../src/data/portfolioData';
-import snapshot from '../src/data/medium-snapshot.json';
-import personal from '../knowledge/personal.json';
+import { HERO_DATA, CORE_STACK_LIST, CORE_STACK_CATEGORIES, PROJECT_SECTIONS, EXPERIENCE_DATA } from '../src/data/portfolioData.js';
+import snapshot from '../src/data/medium-snapshot.json' with { type: 'json' };
+import personal from '../knowledge/personal.json' with { type: 'json' };
 
 export interface KnowledgeDocument { id: string; title: string; text: string; url?: string }
 export interface KnowledgeChunk { id: string; data: string; metadata: { title: string; url?: string } }

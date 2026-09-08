@@ -1,7 +1,7 @@
-import { safeSourceUrl } from './knowledge';
-import { Environment, postJson, required, serviceUrl, ServiceError } from './providers';
-import { queryKnowledge } from './vector-store';
-import { rateLimit } from './rate-limit';
+import { safeSourceUrl } from './knowledge.js';
+import { type Environment, postJson, required, serviceUrl, ServiceError } from './providers.js';
+import { queryKnowledge } from './vector-store.js';
+import { rateLimit } from './rate-limit.js';
 
 export interface ChatMessage { role: 'user' | 'assistant'; content: string }
 export interface ChatSource { title: string; url?: string }

@@ -29,6 +29,7 @@ export async function sendChat(messages: ChatMessage[], signal: AbortSignal, end
     throw new Error('Could not reach the AI guide. Check your connection and try again.');
   }
   if (response.status === 429) throw new Error('The chat has reached its request limit. Please try again later.');
+  if (response.status >= 500) throw new Error('The AI guide is temporarily unavailable. Your question is saved; please try again later.');
   if (response.status === 404 || response.status === 405 || !response.headers.get('content-type')?.includes('application/json')) throw new Error('The AI guide is not connected yet. You can still explore the portfolio or contact Sreeved directly.');
   if (!response.ok) throw new Error(response.status === 503 ? 'The AI guide is unavailable or still being set up. Please try again later.' : 'The message could not be sent. Try a shorter question.');
   const body = await response.json();

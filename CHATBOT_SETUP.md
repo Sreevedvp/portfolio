@@ -65,6 +65,12 @@ GitHub Pages cannot run the server function. You can host the backend on Vercel 
 
 ## Checks
 
+### Vercel `FUNCTION_INVOCATION_FAILED`
+
+A platform-level 500 even for `GET /api/chat` means the function did not reach the chat handler (a working handler returns 405 for GET). Server modules use explicit `.js` import paths and JSON import attributes so the compiled ESM files load in Node without Vite or `tsx`. Keep these imports when editing server code. `npm test` compiles the API into a temporary directory and loads it in plain Node to catch startup failures that the frontend build alone misses.
+
+After applying a server fix, push the changed source and redeploy that revision in Vercel. Redeploying an older revision does not include local fixes. Then check the Vercel function logs if requests still fail; credentials, index configuration, and ingestion are separate from function startup. Never paste secret environment-variable values into logs or chat.
+
 ```sh
 npm run lint
 npm test

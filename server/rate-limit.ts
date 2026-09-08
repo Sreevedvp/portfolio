@@ -1,5 +1,5 @@
 import { createHmac } from 'node:crypto';
-import { Environment, postJson, required, serviceUrl, ServiceError } from './providers';
+import { type Environment, postJson, required, serviceUrl, ServiceError } from './providers.js';
 
 // One atomic decision for both limits, shared by every serverless instance.
 const limitScript = `
