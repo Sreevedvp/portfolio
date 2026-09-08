@@ -221,12 +221,12 @@ const KNOWLEDGE_GRAPH_DATA: {
   },
 ];
 
-export const InteractiveD3Showcase: React.FC = () => {
+export const InteractiveD3Showcase: React.FC<{ motionEnabled?: boolean }> = ({ motionEnabled = true }) => {
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Control States
-  const [isRunning, setIsRunning] = useState(() => !window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const [isRunning, setIsRunning] = useState(() => document.documentElement.dataset.motion !== 'off' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const [fps, setFps] = useState(0);
   const [touchDrag, setTouchDrag] = useState(false);
   const [simSpeed, setSimSpeed] = useState(1);
@@ -349,6 +349,8 @@ export const InteractiveD3Showcase: React.FC = () => {
     initKnowledgeGraph();
   }, [initKnowledgeGraph]);
 
+  useEffect(() => { if (!motionEnabled) setIsRunning(false); }, [motionEnabled]);
+
   // Main Canvas Render & Physics Loop
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -411,7 +413,7 @@ export const InteractiveD3Showcase: React.FC = () => {
       // -------------------------------------------------------------
       // 1. Physics Calculations
       // -------------------------------------------------------------
-      if (isRunning) {
+      if (isRunning && motionEnabled) {
         const speed = simSpeed;
         const centerX = width / 2;
         const centerY = height / 2;
@@ -598,7 +600,7 @@ export const InteractiveD3Showcase: React.FC = () => {
         ctx.globalAlpha = 1;
 
         // Traveling pulse particles along links
-        if (!isFiltered && isRunning && (i % 2 === 0 || isConnected)) {
+        if (!isFiltered && isRunning && motionEnabled && (i % 2 === 0 || isConnected)) {
           const speedMultiplier = (0.0006 + (edge.strength * 0.0005)) * simSpeed;
           const progress = ((time * speedMultiplier) + (i * 0.15)) % 1;
           const px = s.x + dx * progress;
@@ -632,7 +634,7 @@ export const InteractiveD3Showcase: React.FC = () => {
 
         // Outer Glowing Aura & Ping Animation for Hubs or Selected Nodes
         if (!isClusterFiltered && (isFocused || node.isHub)) {
-          const pulseRadius = node.radius + (node.isHub ? 7 : 5) + (isRunning && !reducedMotion.current ? Math.sin(time * 0.006 + node.id) * 3 : 0);
+          const pulseRadius = node.radius + (node.isHub ? 7 : 5) + (isRunning && motionEnabled && !reducedMotion.current ? Math.sin(time * 0.006 + node.id) * 3 : 0);
           ctx.beginPath();
           ctx.arc(node.x, node.y, pulseRadius, 0, Math.PI * 2);
           ctx.fillStyle = clusterMeta.color + (isFocused ? '30' : '12');
@@ -682,7 +684,7 @@ export const InteractiveD3Showcase: React.FC = () => {
       resizeObserver.disconnect();
       if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
     };
-  }, [isRunning, simSpeed, mode, activeClusterFilter, hoveredNode, selectedNode]);
+  }, [isRunning, motionEnabled, simSpeed, mode, activeClusterFilter, hoveredNode, selectedNode]);
 
   const getCanvasCoords = (e: React.PointerEvent<HTMLCanvasElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -749,7 +751,7 @@ export const InteractiveD3Showcase: React.FC = () => {
   };
 
   const triggerPulseSurge = () => {
-    if (!selectedNode || reducedMotion.current) return;
+    if (!selectedNode || reducedMotion.current || !motionEnabled) return;
     shockwavesRef.current.push({
       x: selectedNode.x,
       y: selectedNode.y,
@@ -809,11 +811,11 @@ export const InteractiveD3Showcase: React.FC = () => {
           <p className="graph-inspector-metric">{selectedNode.metric}</p>
           <p className="text-base leading-relaxed text-[var(--text-secondary)]">{selectedNode.description}</p>
           <div className="graph-tags">{selectedNode.tags.map(tag => <span key={tag}>{tag}</span>)}</div>
-          {!reducedMotion.current && <button type="button" className="graph-pulse" onClick={triggerPulseSurge}><Zap size={16} />Pulse connections</button>}
+          {motionEnabled && !reducedMotion.current && <button type="button" className="graph-pulse" onClick={triggerPulseSurge}><Zap size={16} />Pulse connections</button>}
         </div>}
 
         <div className="graph-controls">
-          <div className="graph-playback"><button type="button" className="graph-play" aria-pressed={isRunning} onClick={() => setIsRunning(value => !value)}>{isRunning ? <Pause size={16} /> : <Play size={16} />}{isRunning ? 'Pause' : 'Resume'}</button><button type="button" className="graph-reset" onClick={handleScatter}><RotateCcw size={16} />Reset</button></div>
+          <div className="graph-playback"><button type="button" className="graph-play" disabled={!motionEnabled} title={!motionEnabled ? "Enable animations in navigation to resume" : undefined} aria-pressed={isRunning} onClick={() => setIsRunning(value => !value)}>{isRunning ? <Pause size={16} /> : <Play size={16} />}{!motionEnabled ? 'Motion paused' : isRunning ? 'Pause' : 'Resume'}</button><button type="button" className="graph-reset" onClick={handleScatter}><RotateCcw size={16} />Reset</button></div>
           <div className="graph-speed"><span>Speed</span><div className="graph-segments" role="group" aria-label="Animation speed">{[0.5, 1, 2].map(speed => <button type="button" key={speed} aria-pressed={simSpeed === speed} onClick={() => setSimSpeed(speed)}>{speed}×</button>)}</div></div>
         </div>
       </div>

@@ -16,7 +16,7 @@ const TiltCard: React.FC<{ children: React.ReactNode; className?: string; accent
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     const card = cardRef.current;
-    if (!card) return;
+    if (!card || document.documentElement.dataset.motion === 'off' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;

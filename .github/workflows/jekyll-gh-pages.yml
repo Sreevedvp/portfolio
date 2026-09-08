@@ -31,8 +31,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build site
-        run: npm run build
+      - name: Validate types
+        run: npm run lint
+
+      - name: Test integrations
+        run: node --import tsx --test tests/integrations.test.ts
+
+      - name: Build site for GitHub Pages
+        run: npm run build -- --base=/portfolio/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

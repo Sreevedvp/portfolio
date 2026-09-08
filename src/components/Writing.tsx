@@ -1,89 +1,12 @@
 import React from 'react';
-import { WRITING_DATA } from '../data/portfolioData';
-import { ArticleItem } from '../types';
-import { BookOpen, ArrowUpRight, Clock } from 'lucide-react';
-
-interface WritingProps {
-  onSelectArticle: (article: ArticleItem) => void;
-}
-
-export const Writing: React.FC<WritingProps> = ({ onSelectArticle }) => {
-  return (
-    <section id="writing" className="scroll-mt-24 space-y-8">
-      {/* Header */}
-      <div className="pb-4 flex items-baseline justify-between" style={{ borderBottom: '1px solid var(--border-hover)' }}>
-        <h2 className="comic-heading chromatic" style={{ color: 'var(--emerald-primary)' }}>
-          NOTES FROM <em>THE NETWORK.</em>
-        </h2>
-        <span className="text-xs font-mono tracking-wider uppercase" style={{ color: 'var(--text-muted)' }}>
-          06 // Notes
-        </span>
-      </div>
-
-      {/* Articles List */}
-      <div className="comic-writing-grid">
-        {WRITING_DATA.map((article) => (
-          <button
-            type="button" aria-haspopup="dialog"
-            key={article.id}
-            onClick={() => onSelectArticle(article)}
-            className="emerald-card w-full text-left rounded-xl p-6 md:p-7 cursor-pointer group flex flex-col justify-between transition-all duration-300"
-          >
-            <div>
-              {/* Category & Platform Tag */}
-              <div className="flex items-center gap-2 mb-3">
-                <span
-                  className="px-3 py-1 rounded-full text-xs font-semibold tracking-wider"
-                  style={{ backgroundColor: 'var(--surface-hover)', color: 'var(--emerald-secondary)' }}
-                >
-                  {article.category}
-                </span>
-                <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>•</span>
-                <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
-                  {article.platform}
-                </span>
-                <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>•</span>
-                <span className="text-xs flex items-center gap-1" style={{ color: 'var(--text-muted)' }}>
-                  <Clock className="w-3 h-3" />
-                  {article.readTime}
-                </span>
-              </div>
-
-              {/* Title */}
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <h3 className="font-heading text-3xl font-medium transition-colors leading-snug" style={{ color: 'var(--emerald-primary)' }}>
-                  {article.title}
-                </h3>
-                <div
-                  className="w-8 h-8 rounded-full border flex items-center justify-center transition-all shrink-0 group-hover:scale-110"
-                  style={{
-                    backgroundColor: 'var(--bg-primary)',
-                    borderColor: 'var(--border-color)',
-                    color: 'var(--emerald-primary)',
-                  }}
-                >
-                  <ArrowUpRight className="w-4 h-4 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                </div>
-              </div>
-
-              {/* Description */}
-              <p className="text-[15.5px] md:text-[16px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                {article.summary}
-              </p>
-            </div>
-
-            <div className="mt-4 pt-3 flex items-center justify-between" style={{ borderTop: '1px solid var(--border-color)' }}>
-              <span className="text-xs font-medium flex items-center gap-1 group-hover:underline" style={{ color: 'var(--emerald-primary)' }}>
-                <BookOpen className="w-3.5 h-3.5" />
-                Read Article Preview
-              </span>
-              <span className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
-                {article.date}
-              </span>
-            </div>
-          </button>
-        ))}
-      </div>
-    </section>
-  );
-};
+import { ArrowUpRight, Rss, RefreshCw, BookOpen } from 'lucide-react';
+import type { ArticleItem } from '../types';
+import { MEDIUM_PROFILE } from '../services/medium';
+interface WritingProps { articles: ArticleItem[]; loading: boolean; error: boolean; updatedAt: number; onRefresh: () => void; }
+export const Writing: React.FC<WritingProps> = ({ articles, loading, error, updatedAt, onRefresh }) => (
+  <section id="writing" className="scroll-mt-24 space-y-8">
+    <div className="comic-section-heading"><div><p className="comic-label">06 / FRESH FROM MEDIUM</p><h2 className="comic-heading chromatic">NOTES FROM <em>THE NETWORK.</em></h2></div><div className="writing-feed-meta"><a href={MEDIUM_PROFILE} target="_blank" rel="noreferrer"><Rss size={16} />Follow on Medium <ArrowUpRight size={15} /></a><div role="status" className="feed-status"><span className={error ? 'feed-dot stale' : 'feed-dot'} />{loading ? 'Checking for new stories…' : error ? 'Showing saved stories' : updatedAt ? 'Latest stories from Medium' : 'Recent stories from Medium'}</div>{error && <button type="button" onClick={onRefresh} disabled={loading}><RefreshCw size={14} />Retry sync</button>}</div></div>
+    {articles.length > 0 ? <div className="comic-writing-grid">{articles.slice(0, 6).map((article, index) => <a key={article.id} href={article.url} target="_blank" rel="noreferrer" className={`writing-story emerald-card accent-${index % 4}`}><div className="writing-story-top"><span>{article.category}</span><span>0{index + 1}</span></div><h3>{article.title}</h3><p>{article.summary}</p><div className="writing-story-footer"><span><BookOpen size={14} />Read on Medium <ArrowUpRight size={14} /></span><time dateTime={article.publishedAt}>{article.date}</time></div></a>)}</div> : <div className="writing-empty"><Rss size={24} /><h3>New stories are on their way.</h3><p>My next Medium article will appear here automatically.</p></div>}
+    <a className="secondary-button writing-all" href={MEDIUM_PROFILE} target="_blank" rel="noreferrer">All stories on Medium <ArrowUpRight size={16} /></a>
+  </section>
+);

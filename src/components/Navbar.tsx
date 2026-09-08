@@ -1,14 +1,17 @@
 import { toggleTheme } from '../theme';
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Sun, Moon, Command } from 'lucide-react';
+import { Menu, X, Sun, Moon, Command, Activity, Pause } from 'lucide-react';
 
 interface NavbarProps {
+  motionEnabled: boolean;
+  reducedMotion: boolean;
+  onToggleMotion: () => void;
   onOpenContact: () => void;
   activeSection: string;
   onOpenPalette: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenContact, activeSection, onOpenPalette }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onOpenContact, activeSection, onOpenPalette, motionEnabled, reducedMotion, onToggleMotion }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -81,6 +84,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenContact, activeSection, on
             <button onClick={toggleTheme} className="p-2 rounded-none transition-all" style={{ color: 'var(--text-muted)' }} aria-label="Toggle theme">
               {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
+            <button onClick={onToggleMotion} disabled={reducedMotion} aria-label={reducedMotion ? 'System reduced motion enabled' : motionEnabled ? 'Pause animations' : 'Enable animations'} title={motionEnabled ? 'Pause animations' : 'Enable animations'} aria-pressed={motionEnabled} className="nav-motion-button">{motionEnabled ? <Activity size={16} /> : <Pause size={16} />}</button>
             <button id="nav-contact-btn" onClick={onOpenContact} className="px-5 py-2 rounded-none text-sm font-bold transition-all hover:scale-[1.03] active:scale-[0.98] flex items-center gap-1.5"
               style={{ backgroundColor: 'var(--accent-primary)', color: 'var(--button-text)', boxShadow: '0 0 15px var(--glow-primary)' }}>
               Contact
@@ -100,6 +104,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenContact, activeSection, on
 
         {mobileMenuOpen && (
           <div id="mobile-navigation" className="xl:hidden px-6 py-4 space-y-3 shadow-lg" style={{ backgroundColor: 'var(--nav-bg)', backdropFilter: 'blur(20px)', borderBottom: '1px solid var(--border-color)' }}>
+            <button className="mobile-motion-toggle" onClick={onToggleMotion} disabled={reducedMotion} aria-pressed={motionEnabled}>{motionEnabled ? <Activity size={16} /> : <Pause size={16} />}{reducedMotion ? 'Reduced motion enabled' : motionEnabled ? 'Pause animations' : 'Enable animations'}</button>
             {navLinks.map((link) => (
               <a key={link.name} href={link.href} onClick={() => setMobileMenuOpen(false)} className="block py-2 text-base font-medium" style={{ color: 'var(--text-primary)', borderBottom: '1px solid var(--border-color)' }}>{link.name}</a>
             ))}

@@ -3,9 +3,10 @@ import { useDialog } from '../hooks/useDialog';
 import { ProjectItem, ArticleItem } from '../types';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Search, ArrowRight, Hash, FileText, Briefcase, Code2, Pen, X } from 'lucide-react';
-import { PROJECT_SECTIONS, CORE_STACK_CATEGORIES, EXPERIENCE_DATA, WRITING_DATA } from '../data/portfolioData';
+import { PROJECT_SECTIONS, CORE_STACK_CATEGORIES, EXPERIENCE_DATA } from '../data/portfolioData';
 
 interface CommandPaletteProps {
+  articles: ArticleItem[];
   isOpen: boolean;
   onClose: () => void;
   onSelectProject: (project: ProjectItem) => void;
@@ -20,7 +21,7 @@ interface CommandItem {
   action: () => void;
 }
 
-export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, onSelectProject, onSelectArticle }) => {
+export const CommandPalette: React.FC<CommandPaletteProps> = ({ articles, isOpen, onClose, onSelectProject, onSelectArticle }) => {
   const dialogRef = useDialog(isOpen, onClose);
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -100,7 +101,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose,
     });
 
     // Articles
-    WRITING_DATA.forEach(article => {
+    articles.forEach(article => {
       items.push({
         id: `article-${article.id}`,
         label: article.title,
@@ -126,7 +127,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose,
     });
 
     return items;
-  }, [onClose, onSelectProject, onSelectArticle]);
+  }, [articles, onClose, onSelectProject, onSelectArticle]);
 
   // Filter by query
   const filtered = useMemo(() => {

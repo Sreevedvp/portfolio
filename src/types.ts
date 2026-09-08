@@ -38,6 +38,8 @@ export interface ExperienceItem {
 }
 
 export interface ArticleItem {
+  url?: string;
+  publishedAt?: string;
   id: string;
   title: string;
   category: string;

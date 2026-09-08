@@ -1,0 +1,144 @@
+{
+  "articles": [
+    {
+      "id": "https://medium.com/solo-devs/gpt-6-astra-just-landed-and-anthropic-should-be-paying-very-close-attention-d5be0505b40c",
+      "title": "GPT\u20116 Astra Just Landed \u2014 And Anthropic Should Be Paying Very Close Attention",
+      "url": "https://medium.com/solo-devs/gpt-6-astra-just-landed-and-anthropic-should-be-paying-very-close-attention-d5be0505b40c",
+      "publishedAt": "2026-09-07T19:23:13Z",
+      "category": "chatgpt",
+      "platform": "Medium",
+      "readTime": "",
+      "date": "Sep 07, 2026",
+      "summary": "OpenAI dropped GPT\u20116 Astra on September 3, 2026, and within days it was already sitting in ChatGPT Plus subscribers\u2019 model pickers. No\u2026 Continue reading on solo devs \u00bb",
+      "content": [
+        "OpenAI dropped GPT\u20116 Astra on September 3, 2026, and within days it was already sitting in ChatGPT Plus subscribers\u2019 model pickers. No\u2026 Continue reading on solo devs \u00bb"
+      ]
+    },
+    {
+      "id": "https://medium.com/solo-devs/the-job-application-agent-i-built-in-rust-a-full-kt-guide-for-anyone-who-wants-to-steal-this-idea-0dfe79902a03",
+      "title": "The Job Application Agent I Built in Rust \u2014 A Full KT Guide for Anyone Who Wants to Steal This Idea",
+      "url": "https://medium.com/solo-devs/the-job-application-agent-i-built-in-rust-a-full-kt-guide-for-anyone-who-wants-to-steal-this-idea-0dfe79902a03",
+      "publishedAt": "2026-09-06T17:36:04Z",
+      "category": "artificial-intelligence",
+      "platform": "Medium",
+      "readTime": "",
+      "date": "Sep 06, 2026",
+      "summary": "A wide, walk-through-style technical deep dive into an autonomous Naukri/LinkedIn/Indeed/Wellfound application engine \u2014 architecture\u2026 Continue reading on solo devs \u00bb",
+      "content": [
+        "A wide, walk-through-style technical deep dive into an autonomous Naukri/LinkedIn/Indeed/Wellfound application engine \u2014 architecture\u2026 Continue reading on solo devs \u00bb"
+      ]
+    },
+    {
+      "id": "https://medium.com/solo-devs/oracle-just-fired-21-000-people-while-reporting-record-revenue-and-nobody-should-be-surprised-323df0ed32da",
+      "title": "Oracle Just Fired 21,000 People While Reporting Record Revenue \u2014 And Nobody Should Be Surprised",
+      "url": "https://medium.com/solo-devs/oracle-just-fired-21-000-people-while-reporting-record-revenue-and-nobody-should-be-surprised-323df0ed32da",
+      "publishedAt": "2026-06-26T01:00:28Z",
+      "category": "future",
+      "platform": "Medium",
+      "readTime": "",
+      "date": "Jun 26, 2026",
+      "summary": "The real story behind the biggest tech workforce wipeout of 2026 \u2014 and what it means for every developer reading this. Continue reading on solo devs \u00bb",
+      "content": [
+        "The real story behind the biggest tech workforce wipeout of 2026 \u2014 and what it means for every developer reading this. Continue reading on solo devs \u00bb"
+      ]
+    },
+    {
+      "id": "https://medium.com/solo-devs/rusts-future-perfect-language-awkward-timing-2ae4f1b7428c",
+      "title": "Rust\u2019s Future \u2014 Perfect Language, Awkward Timing",
+      "url": "https://medium.com/solo-devs/rusts-future-perfect-language-awkward-timing-2ae4f1b7428c",
+      "publishedAt": "2026-06-20T11:28:12Z",
+      "category": "coding",
+      "platform": "Medium",
+      "readTime": "",
+      "date": "Jun 20, 2026",
+      "summary": "\u201cEveryone loves Rust in theory. In practice, they love it even more\u2026 as a migration project that\u2019ll be done next quarter.\u201d Continue reading on solo devs \u00bb",
+      "content": [
+        "\u201cEveryone loves Rust in theory. In practice, they love it even more\u2026 as a migration project that\u2019ll be done next quarter.\u201d Continue reading on solo devs \u00bb"
+      ]
+    },
+    {
+      "id": "https://medium.com/solo-devs/math-solves-your-problems-51347395666a",
+      "title": "Math solves your problem\u2019s",
+      "url": "https://medium.com/solo-devs/math-solves-your-problems-51347395666a",
+      "publishedAt": "2026-06-08T16:19:53Z",
+      "category": "javascript",
+      "platform": "Medium",
+      "readTime": "",
+      "date": "Jun 08, 2026",
+      "summary": "the built-in Math object already has you covered. Continue reading on solo devs \u00bb",
+      "content": [
+        "the built-in Math object already has you covered. Continue reading on solo devs \u00bb"
+      ]
+    },
+    {
+      "id": "https://medium.com/solo-devs/i-also-can-create-applications-you-are-done-but-do-you-know-theese-3d51db0442ff",
+      "title": "I also can create Applications, You are done (But do you know theese?)",
+      "url": "https://medium.com/solo-devs/i-also-can-create-applications-you-are-done-but-do-you-know-theese-3d51db0442ff",
+      "publishedAt": "2026-06-06T12:51:15Z",
+      "category": "programming",
+      "platform": "Medium",
+      "readTime": "",
+      "date": "Jun 06, 2026",
+      "summary": "I hope almost every developer have heard this exact or mildly similar comments from the people you know. Its been bother me alot too. \ud83d\ude20\u2026 Continue reading on solo devs \u00bb",
+      "content": [
+        "I hope almost every developer have heard this exact or mildly similar comments from the people you know. Its been bother me alot too. \ud83d\ude20\u2026 Continue reading on solo devs \u00bb"
+      ]
+    },
+    {
+      "id": "https://medium.com/solo-devs/angular-22-everything-experimental-just-became-production-ready-0c3c61993b3a",
+      "title": "Angular 22: Everything Experimental Just Became Production-Ready",
+      "url": "https://medium.com/solo-devs/angular-22-everything-experimental-just-became-production-ready-0c3c61993b3a",
+      "publishedAt": "2026-06-04T08:13:03Z",
+      "category": "angular",
+      "platform": "Medium",
+      "readTime": "",
+      "date": "Jun 04, 2026",
+      "summary": "Signal Forms stable. OnPush by default. WebMCP. @Service decorator. Angular stopped experimenting \u2014 and started delivering. Continue reading on solo devs \u00bb",
+      "content": [
+        "Signal Forms stable. OnPush by default. WebMCP. @Service decorator. Angular stopped experimenting \u2014 and started delivering. Continue reading on solo devs \u00bb"
+      ]
+    },
+    {
+      "id": "https://medium.com/solo-devs/google-did-what-others-couldnt-why-google-ai-studio-is-the-ultimate-game-changer-for-android-00748d313bb1",
+      "title": "Google Did What Others Couldn\u2019t: Why Google AI Studio is the Ultimate Game-Changer for Android\u2026",
+      "url": "https://medium.com/solo-devs/google-did-what-others-couldnt-why-google-ai-studio-is-the-ultimate-game-changer-for-android-00748d313bb1",
+      "publishedAt": "2026-06-01T15:10:03Z",
+      "category": "technology",
+      "platform": "Medium",
+      "readTime": "",
+      "date": "Jun 01, 2026",
+      "summary": "We\u2019ve all seen the AI hype over the past couple of years. Every week, a new AI tool or \u201cdeveloper agent\u201d drops, promising to build a\u2026 Continue reading on solo devs \u00bb",
+      "content": [
+        "We\u2019ve all seen the AI hype over the past couple of years. Every week, a new AI tool or \u201cdeveloper agent\u201d drops, promising to build a\u2026 Continue reading on solo devs \u00bb"
+      ]
+    },
+    {
+      "id": "https://medium.com/solo-devs/i-tried-hermes-agent-heres-my-honest-first-take-1d86f5ed337a",
+      "title": "I Tried Hermes Agent \u2014 Here\u2019s My Honest First Take",
+      "url": "https://medium.com/solo-devs/i-tried-hermes-agent-heres-my-honest-first-take-1d86f5ed337a",
+      "publishedAt": "2026-05-31T03:34:32Z",
+      "category": "ai",
+      "platform": "Medium",
+      "readTime": "",
+      "date": "May 31, 2026",
+      "summary": "I went in skeptical. I came out genuinely curious. That doesn\u2019t happen often. Continue reading on solo devs \u00bb",
+      "content": [
+        "I went in skeptical. I came out genuinely curious. That doesn\u2019t happen often. Continue reading on solo devs \u00bb"
+      ]
+    },
+    {
+      "id": "https://medium.com/solo-devs/null-is-not-your-friend-and-rust-knows-it-f7a7a71437ad",
+      "title": "null Is Not Your Friend \u2014 And Rust Knows It",
+      "url": "https://medium.com/solo-devs/null-is-not-your-friend-and-rust-knows-it-f7a7a71437ad",
+      "publishedAt": "2026-05-29T11:06:42Z",
+      "category": "javascript",
+      "platform": "Medium",
+      "readTime": "",
+      "date": "May 29, 2026",
+      "summary": "This article is part of a series on typing in Rust. If you\u2019ve been writing JavaScript, TypeScript, or even Java for a while, you\u2019ve\u2026 Continue reading on solo devs \u00bb",
+      "content": [
+        "This article is part of a series on typing in Rust. If you\u2019ve been writing JavaScript, TypeScript, or even Java for a while, you\u2019ve\u2026 Continue reading on solo devs \u00bb"
+      ]
+    }
+  ]
+}

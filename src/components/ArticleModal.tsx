@@ -45,7 +45,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({ article, onClose }) 
             <div className="flex items-center gap-3 text-xs text-[var(--text-muted)] font-mono">
               <span className="flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5" />
-                {article.readTime}
+                {article.readTime || "Medium story"}
               </span>
               <span>•</span>
               <span>Published {article.date}</span>
@@ -65,6 +65,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({ article, onClose }) 
           </div>
         </div>
 
+        {article.url && <div className="px-6 pb-6"><a href={article.url} target="_blank" rel="noreferrer" className="primary-button">Read full story on Medium ↗</a></div>}
         {/* Footer */}
         <div className="px-6 py-3 border-t border-[var(--border-color)] bg-[var(--bg-primary)] flex justify-between items-center text-xs text-[var(--text-muted)]">
           <span>Article by Sreeved V P</span>

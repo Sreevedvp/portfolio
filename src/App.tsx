@@ -1,10 +1,12 @@
+import { useMediumArticles } from './hooks/useMediumArticles';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import gsap from 'gsap';
+import { useMotionPreference } from './hooks/useMotionPreference';
+import { usePortfolioMotion } from './hooks/usePortfolioMotion';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { About } from './components/About';
@@ -29,7 +31,11 @@ export default function App() {
   const [activeSection, setActiveSection] = useState('hero');
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
 
+  const medium = useMediumArticles();
+
   const mainRef = useRef<HTMLElement>(null);
+  const motion = useMotionPreference();
+  usePortfolioMotion(mainRef, motion.enabled);
 
   // Keyboard shortcut: Cmd+K / Ctrl+K for Command Palette
   useEffect(() => {
@@ -67,44 +73,6 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // GSAP Scroll Reveal for sections and cards
-  useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const ctx = gsap.context(() => {
-      const observerOptions: IntersectionObserverInit = {
-        root: null,
-        rootMargin: '0px 0px -80px 0px',
-        threshold: 0.1,
-      };
-
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            gsap.fromTo(
-              entry.target,
-              { opacity: 0, y: 30 },
-              {
-                opacity: 1,
-                y: 0,
-                duration: 0.8,
-                ease: 'power2.out',
-                clearProps: 'transform,opacity',
-              }
-            );
-            observer.unobserve(entry.target);
-          }
-        });
-      }, observerOptions);
-
-      const revealElements = document.querySelectorAll('.scroll-reveal');
-      revealElements.forEach((el) => observer.observe(el));
-
-      return () => observer.disconnect();
-    }, mainRef);
-
-    return () => ctx.revert();
-  }, []);
-
   return (
     <div
       className="comic-portfolio min-h-screen font-sans antialiased relative"
@@ -116,6 +84,9 @@ export default function App() {
       <a href="#main-content" className="skip-link">Skip to content</a>
       {/* Fixed Navigation Header */}
       <Navbar
+        motionEnabled={motion.enabled}
+        reducedMotion={motion.reduced}
+        onToggleMotion={motion.toggle}
         onOpenContact={() => setIsContactOpen(true)}
         activeSection={activeSection}
         onOpenPalette={() => setIsPaletteOpen(true)}
@@ -150,7 +121,7 @@ export default function App() {
 
         {/* Interactive Real-time D3 Engine Demonstration */}
         <div className="scroll-reveal">
-          <InteractiveD3Showcase />
+          <InteractiveD3Showcase motionEnabled={motion.enabled} />
         </div>
 
         {/* Experience Timeline */}
@@ -160,7 +131,7 @@ export default function App() {
 
         {/* Writing Articles */}
         <div className="scroll-reveal">
-          <Writing onSelectArticle={(a) => setSelectedArticle(a)} />
+          <Writing articles={medium.articles} loading={medium.loading} error={medium.error} updatedAt={medium.updatedAt} onRefresh={() => medium.refresh(true)} />
         </div>
       </main>
 
@@ -172,6 +143,7 @@ export default function App() {
 
       {/* Command Palette (⌘K) */}
       <CommandPalette
+        articles={medium.articles}
         onSelectProject={setSelectedProject}
         onSelectArticle={setSelectedArticle}
         isOpen={isPaletteOpen}
