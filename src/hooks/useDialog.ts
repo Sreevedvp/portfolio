@@ -11,7 +11,7 @@ export function useDialog(open: boolean, onClose: () => void) {
     const overflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const panel = ref.current;
-    const focusables = (): HTMLElement[] => (Array.from(panel?.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], input, select, textarea, [tabindex="0"]') ?? []) as HTMLElement[]).filter(el => el.getClientRects().length > 0);
+    const focusables = (): HTMLElement[] => (Array.from(panel?.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), summary, [tabindex="0"]') ?? []) as HTMLElement[]).filter(el => el.getClientRects().length > 0);
     (focusables()[0] ?? panel)?.focus();
     const keydown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') { event.preventDefault(); closeRef.current(); }

@@ -21,6 +21,7 @@ import { ContactModal } from './components/ContactModal';
 import { ProjectDetailModal } from './components/ProjectDetailModal';
 import { ArticleModal } from './components/ArticleModal';
 import { CommandPalette } from './components/CommandPalette';
+import { PersonalChat } from './components/PersonalChat';
 import { ProjectItem, ArticleItem } from './types';
 
 export default function App() {
@@ -30,6 +31,7 @@ export default function App() {
   const [selectedArticle, setSelectedArticle] = useState<ArticleItem | null>(null);
   const [activeSection, setActiveSection] = useState('hero');
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const medium = useMediumArticles();
 
@@ -42,12 +44,12 @@ export default function App() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        if (!isResumeOpen && !isContactOpen && !selectedProject && !selectedArticle) setIsPaletteOpen(prev => !prev);
+        if (!isResumeOpen && !isContactOpen && !selectedProject && !selectedArticle && !isChatOpen) setIsPaletteOpen(prev => !prev);
       }
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isResumeOpen, isContactOpen, selectedProject, selectedArticle]);
+  }, [isResumeOpen, isContactOpen, selectedProject, selectedArticle, isChatOpen]);
 
   // Scroll spy for active section in navigation
   useEffect(() => {
@@ -142,6 +144,7 @@ export default function App() {
       />
 
       {/* Command Palette (⌘K) */}
+      <PersonalChat isOpen={isChatOpen} onOpen={() => setIsChatOpen(true)} onClose={() => setIsChatOpen(false)} hidden={isResumeOpen || isContactOpen || !!selectedProject || !!selectedArticle || isPaletteOpen} />
       <CommandPalette
         articles={medium.articles}
         onSelectProject={setSelectedProject}

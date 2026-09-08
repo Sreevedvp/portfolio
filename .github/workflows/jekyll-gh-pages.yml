@@ -35,9 +35,11 @@ jobs:
         run: npm run lint
 
       - name: Test integrations
-        run: node --import tsx --test tests/integrations.test.ts
+        run: npm test
 
       - name: Build site for GitHub Pages
+        env:
+          VITE_CHAT_API_URL: ${{ vars.VITE_CHAT_API_URL }}
         run: npm run build -- --base=/portfolio/
 
       - name: Setup Pages

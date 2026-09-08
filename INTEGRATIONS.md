@@ -1,5 +1,9 @@
 # Portfolio integrations
 
+## Personal AI chatbot
+
+The portfolio includes a Vercel API backed by Upstash Vector and DeepSeek through OpenRouter. Setup, Git-safe secrets, knowledge updates, and connecting the existing GitHub Pages frontend are documented in [CHATBOT_SETUP.md](CHATBOT_SETUP.md). Live activation requires the owner's provider credentials and vector ingestion.
+
 Production URL: https://sreevedvp.github.io/portfolio/
 
 The existing GitHub Pages workflow publishes this static app on pushes to `main`. It runs type checks and integration tests, then builds with `--base=/portfolio/`. The contact and Medium requests go directly to their CORS-enabled services from the visitor’s browser; they do not require a GitHub Pages backend, repository secrets, or an assistant automation. FormSubmit receives the production page URL in `_url`.
@@ -40,4 +44,4 @@ GSAP provides hero entrances, staggered card reveals and desktop pointer paralla
 
 - `npm run lint`
 - `npm run build`
-- `node --import tsx --test tests/integrations.test.ts`
+- `npm test`

@@ -7,6 +7,9 @@
     "dev": "vite --port=3000 --host=0.0.0.0",
     "build": "vite build",
     "preview": "vite preview",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "rag:ingest": "node --import tsx scripts/ingest-knowledge.ts",
+    "rag:check": "node --import tsx scripts/ingest-knowledge.ts --dry-run",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit"
   },
