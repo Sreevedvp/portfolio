@@ -131,6 +131,28 @@ test('rate-limit denial stops retrieval and generation; outages fail closed with
   } finally { globalThis.fetch = original; }
 });
 
+test('provider failures log the service and HTTP status without credentials or provider bodies', async () => {
+  const originalFetch = globalThis.fetch;
+  const originalWarn = console.warn;
+  const warnings: unknown[][] = [];
+  console.warn = (...args) => { warnings.push(args); };
+  try {
+    for (const status of [401, 403, 429, 500, 200]) {
+      globalThis.fetch = async () => Response.json({ error: 'private-provider-details' }, { status });
+      const response = await handleChat(req(), env);
+      assert.equal(response.status, 503);
+      assert.deepEqual(warnings.at(-1), ['Portfolio chat unavailable:', 'rate-limit', { upstreamStatus: status }]);
+      assert.ok(!(await response.text()).includes('private-provider-details'));
+    }
+    const logged = JSON.stringify(warnings);
+    assert.ok(!logged.includes('private-provider-details'));
+    assert.ok(!logged.includes('secret'));
+  } finally {
+    globalThis.fetch = originalFetch;
+    console.warn = originalWarn;
+  }
+});
+
 test('browser sends only messages and handles static hosting, unsafe links and rate limits', async () => {
   const original = globalThis.fetch;
   const signal = new AbortController().signal;

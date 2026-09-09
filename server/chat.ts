@@ -106,7 +106,9 @@ export async function handleChat(request: Request, env: Environment = process.en
   } catch (error) {
     // Do not log request text, API keys, headers, or raw provider responses.
     const service = error instanceof ServiceError ? error.service : 'chat';
-    console.warn('Portfolio chat unavailable:', service);
+    console.warn('Portfolio chat unavailable:', service, {
+      upstreamStatus: error instanceof ServiceError ? error.status ?? null : null,
+    });
     return json({ error: service === 'configuration' || service === 'knowledge' ? "Sreeved's AI guide is still being set up. Please explore the portfolio or contact him directly." : 'The AI guide is temporarily unavailable. Please try again shortly.' }, 503);
   }
 }

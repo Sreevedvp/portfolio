@@ -32,7 +32,7 @@ async function requestJson<T>(url: string, token: string, service: string, optio
     });
     if (!response.ok) throw new ServiceError(service, response.status);
     const result = await response.json();
-    if (!result || result.error) throw new ServiceError(service);
+    if (!result || result.error) throw new ServiceError(service, response.status);
     return result as T;
   } catch (error) {
     if (error instanceof ServiceError) throw error;
