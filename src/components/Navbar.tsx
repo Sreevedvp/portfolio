@@ -59,10 +59,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenContact, activeSection, on
         }}
       >
         <div className="max-w-[1280px] mx-auto px-6 md:px-12 flex justify-between items-center h-14">
-          <a href="#hero" className="flex items-center gap-2 group" style={{ color: 'var(--accent-primary)' }}>
+          {/* <a href="#hero" className="flex items-center gap-2 group" style={{ color: 'var(--accent-primary)' }}>
             <span className="w-2.5 h-2.5 rounded-none transition-all duration-200 group-hover:scale-125 group-hover:shadow-[0_0_12px_var(--accent-primary)]" style={{ backgroundColor: 'var(--accent-primary)' }} />
             <span className="font-heading text-xl font-bold tracking-tight chromatic">SREEVED V P<span className="comic-nav-subtitle">FRONTEND / SYSTEMS / CREATIVE CODE</span></span>
-          </a>
+          </a> */}
 
           <div className="hidden xl:flex items-center gap-4">
             {navLinks.map((link) => {
