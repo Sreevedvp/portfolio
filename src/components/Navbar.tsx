@@ -48,6 +48,6 @@ export const Navbar: React.FC<NavbarProps> = ({ motionEnabled, reducedMotion, on
         </div>
       </div>
     </nav>
-    <aside className="portfolio-section-rail" aria-hidden="true"><span>{links.find(link => link.href === `#${activeSection}`)?.label ?? 'Hello, there.'}</span><small>ENGINEER / MAKER / CURIOUS HUMAN</small></aside>
+    <aside className="portfolio-section-rail" aria-hidden="true"><span>{links.find(link => link.href === `#${activeSection}`)?.label ?? 'Hello, there.'}</span></aside>
   </>;
 };
