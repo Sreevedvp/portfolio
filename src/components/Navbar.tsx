@@ -1,6 +1,7 @@
+import React, { useEffect, useState } from 'react';
+import { ArrowUpRight, Command, Github, Linkedin, Menu, Moon, Pause, Play, Sun, X } from 'lucide-react';
+import { HERO_DATA } from '../data/portfolioData';
 import { toggleTheme } from '../theme';
-import React, { useState, useEffect } from 'react';
-import { Menu, X, Sun, Moon, Command, Activity, Pause } from 'lucide-react';
 
 interface NavbarProps {
   motionEnabled: boolean;
@@ -10,107 +11,43 @@ interface NavbarProps {
   activeSection: string;
   onOpenPalette: () => void;
 }
+const links = [
+  { name: 'A little introduction', href: '#hero', label: 'Hello, there.' },
+  { name: 'About me', href: '#about', label: 'The person.' },
+  { name: 'Selected work', href: '#work', label: 'The work.' },
+  { name: 'Skills & tools', href: '#stack', label: 'The toolkit.' },
+  { name: 'Connected ideas', href: '#visualizer', label: 'Connections.' },
+  { name: 'Experience', href: '#experience', label: 'The journey.' },
+  { name: 'Writing', href: '#writing', label: 'Field notes.' },
+];
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenContact, activeSection, onOpenPalette, motionEnabled, reducedMotion, onToggleMotion }) => {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [isDark, setIsDark] = useState(
-    () => document.documentElement.getAttribute('data-theme') !== 'light'
-  );
-
+export const Navbar: React.FC<NavbarProps> = ({ motionEnabled, reducedMotion, onToggleMotion, onOpenContact, activeSection, onOpenPalette }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isDark, setIsDark] = useState(() => document.documentElement.dataset.theme === 'dark');
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-      const winH = document.documentElement.scrollHeight - window.innerHeight;
-      setScrollProgress(winH > 0 ? (window.scrollY / winH) * 100 : 0);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const sync = () => setIsDark(document.documentElement.dataset.theme !== 'light');
+    const sync = () => setIsDark(document.documentElement.dataset.theme === 'dark');
     window.addEventListener('portfolio-theme-change', sync);
     return () => window.removeEventListener('portfolio-theme-change', sync);
   }, []);
-
-  const navLinks = [
-    { name: 'Work', href: '#work' },
-    { name: 'About', href: '#about' },
-    { name: 'Stack', href: '#stack' },
-    { name: 'Experience', href: '#experience' },
-    { name: 'Visualizer', href: '#visualizer' },
-    { name: 'Writing', href: '#writing' },
-  ];
-
-  return (
-    <>
-      <div className="scroll-progress" style={{ width: `${scrollProgress}%` }} role="progressbar" aria-valuenow={Math.round(scrollProgress)} aria-valuemin={0} aria-valuemax={100} aria-label="Page scroll progress" />
-
-      <nav
-        id="main-navigation"
-        aria-label="Main Navigation"
-        className="fixed top-0 w-full z-50 transition-all duration-300 py-2"
-        style={{
-          backgroundColor: 'var(--nav-bg)',
-          backdropFilter: scrolled ? 'blur(16px) saturate(180%)' : 'none',
-          borderBottom: '2px solid var(--accent-primary)',
-        }}
-      >
-        <div className="max-w-[1280px] mx-auto px-6 md:px-12 flex justify-between items-center h-14">
-          {/* <a href="#hero" className="flex items-center gap-2 group" style={{ color: 'var(--accent-primary)' }}>
-            <span className="w-2.5 h-2.5 rounded-none transition-all duration-200 group-hover:scale-125 group-hover:shadow-[0_0_12px_var(--accent-primary)]" style={{ backgroundColor: 'var(--accent-primary)' }} />
-            <span className="font-heading text-xl font-bold tracking-tight chromatic">SREEVED V P<span className="comic-nav-subtitle">FRONTEND / SYSTEMS / CREATIVE CODE</span></span>
-          </a> */}
-
-          <div className="hidden xl:flex items-center gap-4">
-            {navLinks.map((link) => {
-              const isActive = activeSection === link.href.replace('#', '');
-              return (
-                <a key={link.name} href={link.href} className="text-xs font-mono uppercase font-medium transition-all duration-200 relative py-2"
-                  style={{ color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)', fontWeight: isActive ? 700 : 500 }}>
-                  {link.name}
-                  {isActive && <span className="absolute bottom-0 left-0 w-full h-[2px] rounded-none animate-fade-in" style={{ backgroundColor: 'var(--accent-primary)', boxShadow: '0 0 8px var(--glow-primary)' }} />}
-                </a>
-              );
-            })}
-          </div>
-
-          <div className="hidden xl:flex items-center gap-2">
-            <button onClick={onOpenPalette} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-none text-xs font-medium transition-all border" style={{ color: 'var(--text-muted)', borderColor: 'var(--border-color)' }} title="Search (⌘K)" aria-label="Search portfolio">
-              <Command className="w-3.5 h-3.5" /><span>⌘K</span>
-            </button>
-            <button onClick={toggleTheme} className="p-2 rounded-none transition-all" style={{ color: 'var(--text-muted)' }} aria-label="Toggle theme">
-              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </button>
-            <button onClick={onToggleMotion} disabled={reducedMotion} aria-label={reducedMotion ? 'System reduced motion enabled' : motionEnabled ? 'Pause animations' : 'Enable animations'} title={motionEnabled ? 'Pause animations' : 'Enable animations'} aria-pressed={motionEnabled} className="nav-motion-button">{motionEnabled ? <Activity size={16} /> : <Pause size={16} />}</button>
-            <button id="nav-contact-btn" onClick={onOpenContact} className="px-5 py-2 rounded-none text-sm font-bold transition-all hover:scale-[1.03] active:scale-[0.98] flex items-center gap-1.5"
-              style={{ backgroundColor: 'var(--accent-primary)', color: 'var(--button-text)', boxShadow: '0 0 15px var(--glow-primary)' }}>
-              Contact
-            </button>
-          </div>
-
-          <div className="flex xl:hidden items-center gap-2">
-            <button onClick={toggleTheme} className="p-2 rounded-none" style={{ color: 'var(--text-muted)' }} aria-label="Toggle theme">
-              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </button>
-            <button onClick={onOpenContact} className="px-4 py-1.5 rounded-none text-xs font-bold" style={{ backgroundColor: 'var(--accent-primary)', color: 'var(--button-text)' }}>Contact</button>
-            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle menu" aria-expanded={mobileMenuOpen} aria-controls="mobile-navigation" className="p-2 rounded-none" style={{ color: 'var(--accent-primary)' }}>
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
+  return <>
+    <nav id="main-navigation" className="portfolio-sidebar" aria-label="Main navigation">
+      <a href="#hero" className="portfolio-brand" onClick={() => setMenuOpen(false)}>
+        <strong>Sreeved V P</strong>
+      </a>
+      <button className="portfolio-menu-toggle" aria-label="Toggle menu" aria-expanded={menuOpen} aria-controls="portfolio-navigation-links" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={20} /> : <Menu size={20} />}</button>
+      <div className={`portfolio-nav-content ${menuOpen ? 'is-open' : ''}`} id="portfolio-navigation-links">
+        <button className="portfolio-search" onClick={() => { setMenuOpen(false); onOpenPalette(); }}><Command size={15} /><span>Find something</span><kbd>⌘K</kbd></button>
+        <p className="portfolio-nav-eyebrow">MAKE YOURSELF AT HOME</p>
+        <div className="portfolio-nav-links">{links.map((link, index) => <a key={link.href} href={link.href} aria-current={activeSection === link.href.slice(1) ? 'location' : undefined} onClick={() => setMenuOpen(false)}><span className="portfolio-nav-number">0{index + 1}</span>{link.name}<ArrowUpRight size={13} /></a>)}</div>
+        <button className="portfolio-contact" onClick={() => { setMenuOpen(false); onOpenContact(); }}>Let’s talk <ArrowUpRight size={16} /></button>
+        <div className="portfolio-nav-tools">
+          <a href={HERO_DATA.socials.github} target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={17} /></a>
+          <a href={HERO_DATA.socials.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn"><Linkedin size={17} /></a>
+          <button onClick={toggleTheme} aria-label="Toggle theme">{isDark ? <Sun size={17} /> : <Moon size={17} />}</button>
+          <button onClick={onToggleMotion} disabled={reducedMotion} aria-label={reducedMotion ? 'System reduced motion enabled' : motionEnabled ? 'Pause animations' : 'Enable animations'} aria-pressed={motionEnabled}>{motionEnabled ? <Pause size={17} /> : <Play size={17} />}</button>
         </div>
-
-        {mobileMenuOpen && (
-          <div id="mobile-navigation" className="xl:hidden px-6 py-4 space-y-3 shadow-lg" style={{ backgroundColor: 'var(--nav-bg)', backdropFilter: 'blur(20px)', borderBottom: '1px solid var(--border-color)' }}>
-            <button className="mobile-motion-toggle" onClick={onToggleMotion} disabled={reducedMotion} aria-pressed={motionEnabled}>{motionEnabled ? <Activity size={16} /> : <Pause size={16} />}{reducedMotion ? 'Reduced motion enabled' : motionEnabled ? 'Pause animations' : 'Enable animations'}</button>
-            {navLinks.map((link) => (
-              <a key={link.name} href={link.href} onClick={() => setMobileMenuOpen(false)} className="block py-2 text-base font-medium" style={{ color: 'var(--text-primary)', borderBottom: '1px solid var(--border-color)' }}>{link.name}</a>
-            ))}
-          </div>
-        )}
-      </nav>
-    </>
-  );
+      </div>
+    </nav>
+    <aside className="portfolio-section-rail" aria-hidden="true"><span>{links.find(link => link.href === `#${activeSection}`)?.label ?? 'Hello, there.'}</span><small>ENGINEER / MAKER / CURIOUS HUMAN</small></aside>
+  </>;
 };

@@ -1,1 +1,137 @@
-[]
+[
+    {
+        "title": "About Me",
+        "text": "Sreeved V P is an AI-focused Software Engineer based in Hyderabad, India, with 3.7+ years of experience building scalable web and mobile applications. Proficient in Angular (v14-22), React, and React Native, with expertise in component architecture, state management (NgRx, Redux, RxJS, Signals), and real-time data visualization using WebSockets and D3.js. Skilled in full-stack development with FastAPI and Django, and systems programming in Rust. Experienced in delivering modular, reusable code and performance optimization in fast-paced startup environments. Adept in CI/CD pipelines, Kubernetes deployment, and utilizing generative AI tools to enhance development efficiency and code quality.",
+        "url": "#about"
+    },
+    {
+        "title": "Contact",
+        "text": "Location: Hyderabad, India. Portfolio: https://sreevedvp.github.io/portfolio. LinkedIn: https://www.linkedin.com/in/sreevedvp.",
+        "url": "#contact"
+    },
+    {
+        "title": "Skills",
+        "text": "Angular, TypeScript, Kotlin, FastAPI, Redux, Kubernetes, Helm, Three.js, Next.js, Zustand, Claude Code, React.js, JavaScript, Python, Django, RxJS, Retrieval Augmented Generation (RAG), TanStack Query, Microfrontend architecture, n8n, React Native, Rust, D3.js, NgRx, Docker, MCP (Model Context Protocol), TanStack Start, UX libraries, GitLab CI/CD, Infisical secrets management, Kubernetes NetworkPolicy, OIDC/keyless authentication, and building agents on local LLMs such as the Hermes agent.",
+        "url": "#skills"
+    },
+    {
+        "title": "Certifications",
+        "text": "FastAPI certification, 100 Days of Rust, and AI Engineer Core certification.",
+        "url": "#certifications"
+    },
+    {
+        "title": "Work Experience - Software Engineer at ATAI Labs",
+        "text": "Software Engineer at ATAI Labs (Feb 2023 - Present). Architected and maintained complex Angular applications (v14-21) within an Nx monorepo, migrating components to standalone APIs and Angular Signals to improve performance. Developed a real-time SVG map renderer using D3.js and Angular, managing WebSocket-driven coordinate updates, zoom/rotation state, and animated equipment pin transitions. Built an AnimationQueue system to serialize concurrent D3 SVG transitions triggered by WebSocket events, with adaptive duration control and overflow handling. Implemented a PlaybackService tick engine using self-scheduling setTimeout chains for precise timeline synchronization. Integrated Angular Material with Material Design 3 theming into reusable, accessible UI libraries. Led the Angular Signals migration using official schematics, converting legacy decorator-based inputs, outputs, and lifecycle hooks to the Signals API. Diagnosed and resolved memory leaks tied to ChangeDetectorRef, FocusMonitor, and D3 event listeners. Collaborated with backend teams on WebSocket throttling strategies and REST API integration for high-frequency real-time rendering. Mentored junior developers on Angular architecture, performance optimization, and debugging.",
+        "url": "#experience"
+    },
+    {
+        "title": "DevOps: Kubernetes/Helm Infrastructure Project",
+        "text": "Built a Kubernetes/Helm-based infrastructure project spanning secrets management, networking, and multi-phase deployment automation. Added --dry-run and --validate modes to the deployment script, and integrated a GitLab CI dry-run job using a keyless Kubernetes OIDC authentication pattern. Wrote Infisical admin bootstrap scripting against its admin API to automate secrets-management setup. Built Helm hook job templates for database migrations, resolving timing conflicts between pre-install and post-install hooks. Layered Kubernetes NetworkPolicies with a default-deny baseline, pod-to-pod allow rules, and an ingress-nginx namespace selector for controlled traffic flow. Built a provision-infisical Job template, resolving yq dependency issues by swapping to the mikefarah/yq Docker image. Propagated a HOST_URL variable through GitLab CI using --set flags and dotenv artifacts. Technologies: Kubernetes, Helm, Infisical, GitLab CI/CD, OIDC, NetworkPolicy, Docker, yq.",
+        "url": "#devops"
+    },
+    {
+        "title": "Internship - Gate Survey Application, ATAI Labs",
+        "text": "During a 6-month internship, developed and tested a Gate Survey Application, improving data collection efficiency by approximately 20% through a streamlined UI and optimized backend processes. Collaborated with cross-functional teams to gather requirements and implement features, and used debugging to ensure accurate, timely gate survey data analysis.",
+        "url": "#internship"
+    },
+    {
+        "title": "Project: AI Companion App",
+        "text": "Built a conversational AI companion with a React/React Native frontend and a FastAPI backend, implementing persistent memory, contextual conversation history, and real-time streaming responses via WebSockets and server-sent events. Integrated LLM APIs with prompt engineering to maintain a consistent personality and user-specific context.",
+        "url": "#projects"
+    },
+    {
+        "title": "Project: Watch Party Service",
+        "text": "Developed a synchronized watch party platform with a FastAPI backend and React frontend. Implemented real-time playback synchronization using WebSockets for seamless multi-user viewing, engineered room and session management, and integrated user presence tracking for active participants.",
+        "url": "#projects"
+    },
+    {
+        "title": "Project: Vote Counter - Full-Stack Monorepo",
+        "text": "Developed a vote-counting application with an Angular frontend and a Rust backend using Axum and Tokio. Designed RESTful API contracts for frontend-backend communication and managed cross-platform build automation within an Nx monorepo to optimize the development and deployment workflow.",
+        "url": "#projects"
+    },
+    {
+        "title": "Project: D3.js Yard Plan Visualizer",
+        "text": "Designed an interactive SVG yard/plan map as a digital twin for real-time equipment tracking and asset monitoring. Developed reusable UX libraries for SVG control using class-based instances, and implemented rotation-aware zoom and fit-to-view features. Used D3.js zoom behaviors integrated with custom Angular components for map interactivity.",
+        "url": "#projects"
+    },
+    {
+        "title": "Project: React Native Bluetooth App",
+        "text": "Developed a cross-platform mobile app using React Native (Expo) to streamline data capture from Zebra devices, integrating DataWedge for input transmission to the backend. Delivered the solution within a two-day timeframe.",
+        "url": "#projects"
+    },
+    {
+        "title": "Project: 3D Yard Plan Visualizer (Three.js)",
+        "text": "Developed an interactive 3D yard plan visualizer using Three.js, improving spatial planning accuracy by 30% and client engagement during presentations. Implemented real-time rendering optimizations that reduced load times by 25%. Optimized rendering of 300+ 3D models using the WebGL engine and introduced instance-based rendering for model manipulation, contributing to a 15% increase in overall project efficiency.",
+        "url": "#projects"
+    },
+    {
+        "title": "Project: Monorepo for React and React Native",
+        "text": "Designed and implemented a monorepo architecture integrating React and React Native Expo libraries. Used pnpm to manage dependencies efficiently and established a single-trigger build system based on downstream code changes. Modularized common dependencies such as Axios and TanStack Query for reuse and maintainability.",
+        "url": "#projects"
+    },
+    {
+        "title": "Project: CMS (React Native Expo)",
+        "text": "Developed a CMS using React Native Expo, optimized for both web and Android. Designed responsive, user-friendly UX and used React Native Hook Form to minimize form re-rendering, improving performance and enabling faster issue identification.",
+        "url": "#projects"
+    },
+    {
+        "title": "Project: Common Library",
+        "text": "Developed robust Angular libraries with reusable components including tables, status/error message displays, custom HTTP clients, interceptors, and WebSocket handlers. Integrated internationalization (i18n), snackbars, and common services to standardize workflows. Accelerated project implementation by 50-60% and supported the technical requirements of 5-10 concurrent projects.",
+        "url": "#projects"
+    },
+    {
+        "title": "Education",
+        "text": "B.Tech / B.E. in Information Technology from Dayananda Sagar College of Engineering, Bangalore, graduated 2023, with a grade of 9/10.",
+        "url": "#education"
+    },
+    {
+        "title": "Technical Writing",
+        "text": "Active Medium blogger writing articles on Angular, Rust, JavaScript fundamentals, AI tooling, and developer culture to share learnings and best practices with the developer community.",
+        "url": "#writing"
+    },
+    {
+        "title": "Deep Dive: D3.js and Data Visualization",
+        "text": "Built a real-time SVG map renderer using D3.js and Angular that consumes WebSocket-driven coordinate updates for live equipment tracking. Designed an AnimationQueue as a promise-based FIFO to serialize concurrent D3 SVG transitions triggered by WebSocket events, with adaptive duration control and overflow handling for smooth animation under bursty updates. Used a dual-map pattern (_lastCoords/_targetCoords) to interpolate positions and an interpolateAngle helper with _lastAngle persistence for direction-locked rotation driven by equipment.direction. Implemented fitContentToView and zoomSvgToPointWithRotation with CTM (current transformation matrix) coordinate-space reconciliation to keep D3 zoom and manual rotation from conflicting, resolved via a _customGroupTransform state pattern. Built getNearestCenterLinePoint with lane-direction support for path-aware positioning. Built a PlaybackService tick engine using self-scheduling setTimeout chains for precise timeline synchronization, so recorded equipment movement can be replayed frame-accurately. Debugged and fixed D3 SVG rendering under Angular's OnPush change detection using afterNextRender() and NgZone.runOutsideAngular() to keep animation loops outside Angular's change detection for performance, and resolved memory leaks tied to D3 event listeners and FocusMonitor using Chrome DevTools heap snapshots.",
+        "url": "#d3"
+    },
+    {
+        "title": "Deep Dive: Three.js and 3D Visualization",
+        "text": "Developed an interactive 3D yard plan visualizer using Three.js as a digital-twin style spatial planning tool, improving spatial planning accuracy by 30% and client engagement in presentations. Optimized rendering of 300+ 3D models on the WebGL engine and introduced instance-based rendering to make model manipulation performant at that scale. Implemented real-time rendering optimizations that cut load times by 25%, keeping the experience smooth across devices. Separately, has explored Dioxus for cross-platform Rust app development and continues to experiment with 3D/spatial tooling as an extension of the 2D D3.js SVG work done at ATAI Labs.",
+        "url": "#threejs"
+    },
+    {
+        "title": "Frontend Engineering in Depth",
+        "text": "Deep Angular specialization spanning versions 14 through 22, including leading a full Signals migration using Angular's official schematics (signal-input-migration, output-migration, signal-queries-migration) to convert legacy decorator-based inputs, outputs, and lifecycle hooks to the reactive Signals API, and fixing resulting injection-context errors (NG0203) caused by new Component() instantiation breaking signal-based input()/output() bindings in Angular 21. Worked extensively within Nx monorepos on a microfrontend platform (AtYardNSFT), including GitLab CI parent-child pipeline architecture with parallel bridge jobs, workflow rules for parent-pipeline sources, and an API-polling approval gate. Built a shared component library with Stencil.js that compiles to framework-agnostic Web Components, reused across both the Angular and React codebases. Debugged production memory leaks using Chrome DevTools heap snapshots, tracing issues to ChangeDetectorRef, FocusMonitor/mat-menu leaks, and D3 event listeners, and applied NgZone.runOutsideAngular() to keep hot render loops outside change detection for performance. State management experience spans NgRx, Redux, RxJS, and Angular Signals, with UI work in Angular Material (Material Design 3 theming) and TanStack Query for data fetching.",
+        "url": "#frontend"
+    },
+    {
+        "title": "GenAI and Local LLM Tooling",
+        "text": "Runs a home lab centered on local LLM workflows, including a home server (Proxmox, Docker, custom AMD hardware) and edge AI experimentation with a Jetson Nano. Uses local LLM tooling including Ollama and a locally-run Hermes agent on a Mac as the backbone for personal AI agents, rather than relying solely on hosted APIs. Built a Model Context Protocol (MCP) server in Rust using the rmcp crate, and has explored MCP as an interface layer for a CRM outreach pipeline (NestJS backend, WhatsApp Business API, Angular frontend). Uses generative AI coding tools (including Claude Code) as part of the day-to-day engineering workflow at ATAI Labs to improve development efficiency and code quality through automated guardrails and context optimization techniques.",
+        "url": "#genai"
+    },
+    {
+        "title": "Full-Stack AI Projects",
+        "text": "Built a personal, fully Rust-based Retrieval-Augmented Generation (RAG) system: per-source ingestion workers (reqwest, scraper, octocrab), ONNX embeddings via fastembed-rs, a Qdrant vector store, BM25 keyword search via tantivy, hybrid retrieval combined with Reciprocal Rank Fusion, and an Axum API that streams responses via Server-Sent Events to Claude's API. Built a job-application automation agent on a local Hermes LLM setup: Playwright-based scraping, an embedding-based relevance filter (fastembed-rs/Qdrant) to pre-select roles before invoking the LLM, an easy-apply pipeline for Naukri, SQLite for state, base64-inlined screenshots for HTML pipeline reports, and a Codex vision tool wired in as an automated QA gate, with a deliberate focus on minimizing token usage and managing context compaction across long agentic sessions. This portfolio's own 'Ask about me' chatbot is itself a full-stack AI project: a Vercel Node.js function that retrieves relevant portfolio text from an Upstash Vector index and answers through DeepSeek via OpenRouter, with Upstash Redis-backed rate limiting and no credentials exposed to the browser. Currently building a Rust-based daily activity tracking agent designed to integrate with the local Hermes agent, with planned Google Calendar and Strava integrations exposed as MCP servers under a personal 'MCP hub' framework for adding new integrations freely.",
+        "url": "#ai-projects"
+    },
+    {
+        "title": "Recruiter Search Summary - Tech Stack and Role Fit",
+        "text": "Sreeved V P is a Frontend-leaning Full-Stack / AI Software Engineer, 3.7+ years experience, based in Hyderabad, India, open to roles such as Frontend Engineer, Senior Frontend Engineer, Full-Stack Engineer, and AI Engineer. Core frontend stack: Angular (v14-22, standalone components, Signals, NgRx, RxJS, Angular Material, Material Design 3), React.js, React Native (Expo), Next.js, TanStack Query and TanStack Start, Redux, Zustand, React Hook Form, TypeScript, JavaScript, Stencil.js (Web Components), microfrontend architecture, and Nx monorepo tooling. Data visualization: D3.js (SVG, real-time WebSocket-driven rendering, animation systems) and Three.js (WebGL, 3D digital twins, instance-based rendering). Backend and systems: Python, FastAPI, Django, Rust (Axum, Tokio), Kotlin. AI / GenAI: Retrieval-Augmented Generation (RAG), Model Context Protocol (MCP), LLM API integration and prompt engineering, agentic workflows, local LLM tooling (Ollama, Hermes agent), and using Claude Code and similar generative AI tools inside a professional engineering workflow. DevOps and infrastructure: Kubernetes, Helm, Docker, GitLab CI/CD (including OIDC keyless authentication), Infisical secrets management, Kubernetes NetworkPolicy, and n8n workflow automation. Cross-cutting engineering strengths: real-time systems (WebSockets, Server-Sent Events), performance optimization and memory-leak debugging, component architecture and reusable UI/library design, and CI/CD pipeline design.",
+        "url": "#skills"
+    },
+    {
+        "title": "Memory Leak Fixes and Performance Debugging",
+        "text": "Has repeatedly diagnosed and fixed production memory leaks in Angular applications during extended sessions, using Chrome DevTools heap snapshots as the primary diagnostic tool. Root causes fixed include: ChangeDetectorRef references not being cleaned up, FocusMonitor and mat-menu leaks in Angular Material components, D3.js event listeners left attached after component teardown, and an Angular framework-level leak tracked against Angular issue #65922. Applied NgZone.runOutsideAngular() to move hot render loops (D3 animation, WebSocket-driven updates) outside Angular's change detection cycle, both as a performance optimization and to reduce leak surface area. This work significantly improved application stability during long-running real-time sessions on the AtYardNSFT platform.",
+        "url": "#performance"
+    },
+    {
+        "title": "Deep Dive: React, React Native, and State Management",
+        "text": "Builds cross-platform mobile apps with React Native using Expo, including a Bluetooth data-capture app integrating Zebra DataWedge for streamlined input transmission, delivered within a two-day turnaround, and a CMS built with React Native Expo optimized for both web and Android. Uses React Hook Form to minimize form re-rendering and improve performance in form-heavy interfaces, and React Native Hook Form specifically in the CMS project for faster issue identification and better customer-facing performance. Uses Zustand alongside Redux and NgRx as a lightweight state management option depending on project needs, and TanStack Query for data fetching and caching across both React and Angular codebases. Has built and maintained a monorepo integrating React and React Native Expo libraries using pnpm for dependency management, with a single-trigger build system based on downstream code changes and modularized shared dependencies (Axios, TanStack Query) for reuse across apps. Also built a full-stack conversational AI companion app with a React/React Native frontend and FastAPI backend, using WebSockets and Server-Sent Events for real-time streaming responses.",
+        "url": "#react"
+    },
+    {
+        "title": "Hobbies and Languages",
+        "text": "Hobbies include technical blogging, open source contribution, and algorithmic problem solving. Speaks English, Hindi, and Malayalam.",
+        "url": "#about"
+    }
+]

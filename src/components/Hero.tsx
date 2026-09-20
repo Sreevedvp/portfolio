@@ -1,22 +1,18 @@
 import React from 'react';
 import { HERO_DATA, PROJECT_SECTIONS } from '../data/portfolioData';
-import { ArrowDown, ArrowUpRight, FileText, Github, Linkedin, Zap } from 'lucide-react';
-
+import { ArrowDown, ArrowUpRight, FileText } from 'lucide-react';
 interface HeroProps { onOpenResume: () => void; onOpenContact: () => void; }
 export const Hero: React.FC<HeroProps> = ({ onOpenResume, onOpenContact }) => (
-  <section id="hero" className="comic-hero">
-    <div className="comic-status-line"><span><i /> ONLINE: BUILDING THINGS FOR THE WEB</span><span>HYDERABAD, INDIA // PORTFOLIO 2026</span></div>
-    <div className="comic-hero-grid">
-      <div className="comic-hero-copy">
-        <div className="comic-eyebrow"><span className="comic-label">HELLO, WORLD ↗</span><span className="comic-label yellow">SREEVED V P</span><span className="comic-issue">// VOL. 01</span></div>
-        <h1 className="comic-hero-title">FRONTEND <em>ENGINEER.</em><br />SYSTEMS THINKER.<br /><span>CREATIVE BUILDER.</span></h1>
-        <p className="comic-intro">{HERO_DATA.shortBio} From expressive interfaces to real-time experiences, I make complex things feel simple.</p>
-        <div className="comic-hero-actions"><a href="#work" className="primary-button"><Zap size={16} />Explore the work <ArrowUpRight size={16} /></a><button onClick={onOpenContact} className="secondary-button">Have an idea? Let's talk <ArrowUpRight size={16} /></button></div>
-        <div className="comic-hero-socials"><span className="comic-availability"><i />AVAILABLE FOR OPPORTUNITIES</span><a href={HERO_DATA.socials.github} target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={17} /></a><a href={HERO_DATA.socials.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn"><Linkedin size={17} /></a><button onClick={onOpenResume}><FileText size={15} />Résumé</button></div>
-      </div>
-      <figure className="comic-portrait"><div className="comic-portrait-top"><span>CREATIVE ENERGY / ALWAYS ON</span><span>FIG. 01</span></div><img src={`${import.meta.env.BASE_URL}assets/comic/studio.jpg`} alt="Comic-book illustration of a creative working in a neon-filled studio" width="640" height="640" fetchPriority="high" /><figcaption><span>CODE. CREATE. REPEAT.</span><Zap size={16} /><span>NO ORDINARY WORKDAY</span></figcaption></figure>
+  <section id="hero" className="portfolio-hero">
+    <div className="portfolio-hello"><span>INDEPENDENT MIND. CONNECTED IDEAS.</span><span>{HERO_DATA.location} ↗</span></div>
+    <div className="portfolio-hero-main">
+      <p className="comic-eyebrow">HELLO, I’M SREEVED <span aria-hidden="true">✳</span></p>
+      <h1 className="comic-hero-title">Making complex<br />things feel <em>simple.</em></h1>
+      <p className="comic-intro">Frontend engineer. Systems thinker. Curious builder.<br />I craft thoughtful interfaces and the systems behind them.</p>
+      <div className="comic-hero-actions"><a href="#work" className="primary-button">Explore my work <ArrowUpRight size={17} /></a><button onClick={onOpenContact} className="secondary-button">Have an idea? Let’s talk <ArrowUpRight size={16} /></button></div>
+      <div className="comic-hero-socials"><span className="portfolio-availability"><i />Open to new opportunities</span><button onClick={onOpenResume}><FileText size={15} />View résumé</button></div>
     </div>
-    <div className="comic-stats">{[['3.5+', 'Years of experience', 'FRONTEND & BEYOND'], [String(PROJECT_SECTIONS.flatMap(s => s.items).length).padStart(2, '0'), 'Selected projects', 'BUILT FOR THE REAL WORLD'], ['60 FPS', 'Rendering focus', 'SMOOTH UNDER PRESSURE'], ['06', 'Core disciplines', 'ONE CONNECTED TOOLKIT']].map(([value,label,note],index) => <div key={label} className={`comic-stat accent-${index}`}><p>{label}</p><strong>{value}</strong><span>{note}</span><div className="comic-meter" aria-hidden="true" /></div>)}</div>
-    <a href="#about" className="comic-scroll">KEEP EXPLORING <ArrowDown size={13} /></a>
+    <div className="portfolio-intro-strip"><p>A little craft.<br /><em>A lot of curiosity.</em></p><span>From expressive interfaces to real-time experiences, I build software that works beautifully — inside and out.</span><a href="#about" aria-label="More about me"><ArrowDown size={26} /></a></div>
+    <div className="comic-stats">{[['3.5+', 'Years of experience'], [String(PROJECT_SECTIONS.flatMap(s => s.items).length).padStart(2, '0'), 'Selected projects'], ['60 FPS', 'Rendering focus'], ['06', 'Connected disciplines']].map(([value,label],index) => <div key={label} className={`comic-stat accent-${index}`}><strong>{value}</strong><p>{label}</p></div>)}</div>
   </section>
 );

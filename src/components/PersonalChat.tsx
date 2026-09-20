@@ -44,7 +44,7 @@ export function PersonalChat({ isOpen, onOpen, onClose, hidden }: Props) {
   }
 
   return <>
-    {!hidden && <button className="chat-launcher" onClick={onOpen} aria-haspopup="dialog" aria-expanded={isOpen} aria-controls="personal-chat"><MessageCircle size={21} /><span>Ask about me</span><Sparkles size={15} /></button>}
+    {!hidden && <button className="chat-launcher" aria-label="Ask about me" onClick={onOpen} aria-haspopup="dialog" aria-expanded={isOpen} aria-controls="personal-chat"><MessageCircle size={21} /><span>Ask about me</span><Sparkles size={15} /></button>}
     {isOpen && <div className="chat-backdrop" onClick={onClose}>
       <div id="personal-chat" ref={panel} className="personal-chat" role="dialog" aria-modal="true" aria-labelledby="chat-title" tabIndex={-1} onClick={event => event.stopPropagation()}>
         <header className="chat-header">

@@ -61,7 +61,7 @@ export const CoreStack: React.FC = () => {
     <section id="stack" className="scroll-mt-24 space-y-8 relative">
       <p className="comic-label">03 / TOOLS OF THE TRADE</p>
       <div className="pb-4 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border-hover)' }}>
-        <h2 className="comic-heading" style={{ color: 'var(--text-primary)' }}>WEAPONS OF <em>CREATIVE CHOICE.</em></h2>
+        <h2 className="comic-heading" style={{ color: 'var(--text-primary)' }}>A few of my<br /><em>favourite tools.</em></h2>
         <div className="flex items-center gap-1 p-1 rounded-lg border" style={{ backgroundColor: 'var(--surface-hover)', borderColor: 'var(--border-color)' }}>
           <button aria-label="Grid view" aria-pressed={viewMode === 'bento'} onClick={() => setViewMode('bento')} className="flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-all"
             style={{ backgroundColor: viewMode === 'bento' ? 'var(--bg-card)' : 'transparent', color: viewMode === 'bento' ? 'var(--accent-primary)' : 'var(--text-secondary)' }}>

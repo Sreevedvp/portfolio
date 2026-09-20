@@ -8,7 +8,7 @@ export const Experience: React.FC = () => {
       {/* Header */}
       <div className="pb-4 flex items-baseline justify-between" style={{ borderBottom: '1px solid var(--border-hover)' }}>
         <h2 className="comic-heading" style={{ color: 'var(--emerald-primary)' }}>
-          THE STORY <em>SO FAR.</em>
+          The story <em>so far.</em>
         </h2>
         <span className="text-xs font-mono tracking-wider uppercase" style={{ color: 'var(--text-muted)' }}>
           05 // Career

@@ -37,12 +37,12 @@ interface Shockwave {
 }
 
 const CLUSTERS = [
-  { name: 'Angular & Frontend', color: '#ffd600', highlight: '#fff09b', icon: Code2 },
-  { name: 'Data Visualization', color: '#00c4dd', highlight: '#8eeeff', icon: Network },
-  { name: 'Rust & Systems', color: '#b388ff', highlight: '#ddcaff', icon: Cpu },
-  { name: 'React & UI Craft', color: '#ff668e', highlight: '#ffb4ca', icon: Boxes },
-  { name: 'Cloud & DevOps', color: '#69dca9', highlight: '#b4f4d4', icon: Server },
-  { name: 'AI & Automation', color: '#ffb86c', highlight: '#ffdab4', icon: Brain },
+  { name: 'Angular & Frontend', color: '#b24d44', highlight: '#b24d44', icon: Code2 },
+  { name: 'Data Visualization', color: '#687b76', highlight: '#687b76', icon: Network },
+  { name: 'Rust & Systems', color: '#87627c', highlight: '#87627c', icon: Cpu },
+  { name: 'React & UI Craft', color: '#b95870', highlight: '#b95870', icon: Boxes },
+  { name: 'Cloud & DevOps', color: '#718259', highlight: '#718259', icon: Server },
+  { name: 'AI & Automation', color: '#b17440', highlight: '#b17440', icon: Brain },
 ];
 
 // Definition of Sreeved's Architecture Knowledge Mesh
@@ -776,7 +776,7 @@ export const InteractiveD3Showcase: React.FC<{ motionEnabled?: boolean }> = ({ m
   return (
     <section id="visualizer" className="skill-graph space-y-6">
       <div className="graph-heading">
-        <div><p className="hero-kicker mb-3">04 / Interactive playground</p><h2 className="comic-heading chromatic">CONNECT <em>THE DOTS.</em></h2><p className="text-base text-[var(--text-secondary)] mt-3">Explore the technologies behind my work. Select a node to go deeper.</p></div>
+        <div><p className="hero-kicker mb-3">04 / Interactive playground</p><h2 className="comic-heading chromatic">Connect <em>the dots.</em></h2><p className="text-base text-[var(--text-secondary)] mt-3">Explore the technologies behind my work. Select a node to go deeper.</p></div>
         <div className="graph-telemetry" aria-label="Graph status"><span className="graph-status-dot" /><span>{isRunning ? `${fps} FPS` : 'PAUSED'}</span><span>{nodesRef.current.length} nodes</span><span>{activeConnectionsCount} links</span></div>
       </div>
 

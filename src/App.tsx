@@ -77,7 +77,7 @@ export default function App() {
 
   return (
     <div
-      className="comic-portfolio min-h-screen font-sans antialiased relative"
+      className="comic-portfolio notion-portfolio min-h-screen font-sans antialiased relative"
       style={{
         backgroundColor: 'var(--bg-primary)',
         color: 'var(--text-primary)',
@@ -98,9 +98,9 @@ export default function App() {
       <main
         id="main-content"
         ref={mainRef}
-        className="relative z-10 max-w-[1280px] mx-auto px-6 md:px-12 pt-24 pb-8 space-y-20 md:space-y-24"
+        className="portfolio-main relative z-10"
       >
-        {/* Comic introduction and reference artwork */}
+        {/* Portfolio introduction */}
         <Hero
           onOpenResume={() => setIsResumeOpen(true)}
           onOpenContact={() => setIsContactOpen(true)}
