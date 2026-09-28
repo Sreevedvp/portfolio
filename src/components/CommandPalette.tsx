@@ -38,6 +38,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ articles, isOpen
       { name: 'About', href: '#about' },
       { name: 'Core Stack', href: '#stack' },
       { name: 'Work & Projects', href: '#work' },
+      { name: 'Experiments · Fast UI library & docs', href: '#experiments' },
       { name: 'D3 Visualizer', href: '#visualizer' },
       { name: 'Experience', href: '#experience' },
       { name: 'Writing', href: '#writing' },

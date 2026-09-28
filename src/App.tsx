@@ -12,6 +12,7 @@ import { Hero } from './components/Hero';
 import { About } from './components/About';
 import { CoreStack } from './components/CoreStack';
 import { ProjectsWork } from './components/ProjectsWork';
+import { Experiments } from './components/Experiments';
 import { InteractiveD3Showcase } from './components/InteractiveD3Showcase';
 import { Experience } from './components/Experience';
 import { Writing } from './components/Writing';
@@ -54,7 +55,7 @@ export default function App() {
   // Scroll spy for active section in navigation
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['hero', 'about', 'stack', 'work', 'visualizer', 'experience', 'writing'];
+      const sections = ['hero', 'about', 'work', 'experiments', 'stack', 'visualizer', 'experience', 'writing'];
       const scrollPos = window.scrollY + 180;
 
       for (const sectionId of sections) {
@@ -114,6 +115,11 @@ export default function App() {
         {/* Technical Architecture & Projects */}
         <div className="scroll-reveal">
           <ProjectsWork onSelectProject={(p) => setSelectedProject(p)} />
+        </div>
+
+        {/* Independent experiments and component documentation */}
+        <div className="scroll-reveal">
+          <Experiments />
         </div>
 
         {/* Core Stack Section */}

@@ -15,6 +15,7 @@ const links = [
   { name: 'A little introduction', href: '#hero', label: 'Hello, there.' },
   { name: 'About me', href: '#about', label: 'The person.' },
   { name: 'Selected work', href: '#work', label: 'The work.' },
+  { name: 'Experiments', href: '#experiments', label: 'The lab.' },
   { name: 'Skills & tools', href: '#stack', label: 'The toolkit.' },
   { name: 'Connected ideas', href: '#visualizer', label: 'Connections.' },
   { name: 'Experience', href: '#experience', label: 'The journey.' },
